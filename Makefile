@@ -6,6 +6,7 @@ OBJDIR			= build
 SRCDIR			= src
 RESDIR			= res
 LIBDIR			= lib
+TOOLSDIR		= tools
 
 # Name of your project, will set the name of your ROM.
 PROJECT_NAME	:= SUMMONER
