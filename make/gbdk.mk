@@ -1,5 +1,7 @@
 .PHONY: all rom clean cleanRom cleanBuild
 
+rwildcard	=	$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
 ifndef SRCDIR
 $(error SRCDIR is not set. Example "src")
 endif
@@ -25,11 +27,11 @@ ifneq ($(filter-out DMG SGB CGB,$(TARGETS)),)
 $(error TARGETS should be a combination of DMG SGB CGB, unknown: $(filter-out DMG SGB CGB,$(TARGETS)))
 endif
 
-SRC				= $(shell find $(SRCDIR)/ -type f -name '*.c')
-ASM				= $(shell find $(SRCDIR)/ -type f -name '*.s')
+SRC				= $(call rwildcard, $(SRCDIR), *.c) # $(shell find $(SRCDIR)/ -type f -name '*.c')
+ASM				= $(call rwildcard, $(SRCDIR), *.s) # $(shell find $(SRCDIR)/ -type f -name '*.s')
 OBJ				= $(patsubst %, $(OBJDIR)/%.o, $(ASM) $(SRC))
 
-LCCFLAGS		= -msm83:gb -I$(SRCDIR) -Wm-Z -Wm-yn"$(PROJECT_NAME)" -Wm-yj -debug
+LCCFLAGS		= -msm83:gb -I. -I$(SRCDIR) -Wm-Z -Wm-yn"$(PROJECT_NAME)" -Wm-yj -debug
 
 ROM_EXTENSION	:= gb
 
@@ -71,6 +73,18 @@ $(OBJDIR)/%.s.o: %.s
 	@echo Compiling $<
 	@mkdir -p $(dir $@)
 	$(Q)$(LCC) $(LCCFLAGS) -c -o $@ $<
+
+$(OBJDIR)/%.c.d: %.c
+	@echo Compiling $<
+	@mkdir -p $(dir $@)
+	$(Q)$(LCC) $(LCCFLAGS) -c -o $@ $< -Wp-MM
+
+$(OBJDIR)/%.s.d: %.c
+	@echo Compiling $<
+	@mkdir -p $(dir $@)
+	$(Q)$(LCC) $(LCCFLAGS) -c -o $@ $< -Wp-MM
+
+include $(OBJ:.o=.d)
 
 $(PROJECT_NAME).$(ROM_EXTENSION): $(LIBS) $(OBJ)
 	@echo Making rom $@
