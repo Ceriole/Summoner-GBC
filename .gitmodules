@@ -1,0 +1,4 @@
+
+[submodule "lib/hUGEDriver"]
+	path = lib/hUGEDriver
+	url = https://github.com/SuperDisk/hUGEDriver.git
