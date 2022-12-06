@@ -6,6 +6,9 @@ endif
 ifndef OBJDIR
 $(error OBJDIR is not set. Example "build")
 endif
+ifndef TOOLSDIR
+$(error TOOLSDIR is not set. Example "tools")
+endif
 ifndef RGBDS_HOME
 $(error RGBDS_HOME is not set. Example "D:/RGBDS")
 endif
@@ -14,7 +17,7 @@ HUGEDIR			?= $(LIBDIR)/hUGEDriver
 
 HUGETOOLS		:= $(HUGEDIR)/tools
 RGBASM			:= $(RGBDS_HOME)/rgbasm
-RGB2SDAS		:= $(HUGETOOLS)/rgb2sdas.exe
+RGB2SDAS		:= $(TOOLSDIR)/rgb2sdas.exe
 
 HUGEASMFLAGS	:= -DGBDK -i$(HUGEDIR)
 HUGECONVFLAGS	:= -b0
@@ -22,7 +25,9 @@ HUGECONVFLAGS	:= -b0
 Q ?= @
 
 $(RGB2SDAS):
-	@$(MAKE) -C $(dir $@)
+	@$(MAKE) -C $(HUGEDIR)/tools
+	@mkdir -p $(dir $@)
+	@mv $(HUGEDIR)/tools/$(notdir $@) $(RGB2SDAS)
 
 $(OBJDIR)/$(HUGEDIR)/hUGEDriver.obj.o: $(OBJDIR)/$(HUGEDIR)/hUGEDriver.obj $(RGB2SDAS)
 	@echo Converting hUGEDriver
@@ -43,4 +48,4 @@ cleanHUGE:
 	@rm -rf $(OBJDIR)/$(HUGEDIR)
 
 cleanRgb2Sdas:
-	@rm -rf $(RGB2SDAS) $(RGB2SDAS:.exe=.o)
+	@rm -rf $(RGB2SDAS) $(HUGEDIR)/tools/$(notdir $@)
