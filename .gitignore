@@ -1,0 +1,8 @@
+.vscode
+/build
+
+/*.gbc
+/*.cdb
+/*.ihx
+/*.map
+/*.noi
