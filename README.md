@@ -9,7 +9,7 @@ Summon demons and DATE them!!! (kiss, hold hand... wow...)
 ### Clone
 Download the repository by running the command:
 ```bat
-git clone --recursive <https://github.com/Ceriole/thisrepo.git>
+git clone --recursive https://github.com/Ceriole/Summoner-GBC.git
 ```
 
 Set `*_HOME` variables to tool paths in the [`Makefile`](Makefile) with a text editor. See [below](#requirements) for links to tools and dependencies.
