@@ -14,7 +14,7 @@ Download the repository by running the command:
 git clone --recursive https://github.com/Ceriole/Summoner-GBC.git
 ```
 
-Set `*_HOME` variables to tool paths in the [`Makefile`](Makefile) with a text editor. See [below](#requirements) for links to tools and dependencies.
+Set `*_HOME` variables to tool paths in the [`cfg.mk`](configuration make file) with a text editor. See [below](#requirements) for links to tools and dependencies.
 
 ### Build
 In the base directory run the commands:

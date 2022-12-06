@@ -6,3 +6,5 @@
 /*.ihx
 /*.map
 /*.noi
+
+cfg.mk

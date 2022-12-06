@@ -1,6 +1,4 @@
-GBDK_HOME		:= D:/gbdk/
-# Aseprite executeable for 
-ASEPRITE_HOME	:= D:/SteamLibrary/steamapps/common/Aseprite
+include cfg.mk
 
 OBJDIR			= build
 SRCDIR			= src
@@ -17,9 +15,7 @@ TARGETS			:= CGB
 LIBS			:= $(OBJDIR)/$(LIBDIR)/hUGEDriver/hUGEDriver.obj.o
 
 include make/gbdk.mk
-# Set to rgbds v6.0 for the newest rgbgfx
-RGBDS_HOME		:= D:/RGBDS/6.0
 include make/assets.mk
 # Set to rgbds v5.1 for building hUGEDriver
-RGBDS_HOME		:= D:/RGBDS/5.1
+RGBDS51_HOME	?= $(RGBDS_HOME)
 include make/libs.mk
