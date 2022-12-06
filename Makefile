@@ -18,5 +18,5 @@ LIBS			:= $(OBJDIR)/$(LIBDIR)/hUGEDriver/hUGEDriver.obj.o
 include make/gbdk.mk
 include make/assets.mk
 # Set to rgbds v5.1 for building hUGEDriver
-RGBDS51_HOME	?= $(RGBDS_HOME)
+RGBDS_51_HOME	?= $(RGBDS_HOME)
 include make/libs.mk
