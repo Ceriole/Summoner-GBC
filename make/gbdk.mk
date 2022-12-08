@@ -29,22 +29,25 @@ endif
 
 SRC				= $(call rwildcard, $(SRCDIR), *.c) # $(shell find $(SRCDIR)/ -type f -name '*.c')
 ASM				= $(call rwildcard, $(SRCDIR), *.s) # $(shell find $(SRCDIR)/ -type f -name '*.s')
-OBJ				= $(patsubst %, $(OBJDIR)/%.o, $(ASM) $(SRC))
+OBJ				= $(patsubst %, $(OBJDIR)/%.o, $(SRC) $(ASM))
 
-LCCFLAGS		= -msm83:gb -I. -I$(SRCDIR) -Wm-Z -Wm-yn"$(PROJECT_NAME)" -Wm-yj -debug
+DEBUGFLAG		?= -debug
+INCFLAGS		= -I. -I$(SRCDIR)
+LCCFLAGS		= -c -msm83:gb $(INCFLAGS) $(DEBUGFLAG)
+LCCLINKFLAGS	= -msm83:gb $(INCFLAGS) -Wm-Z -Wm-yn"$(PROJECT_NAME)" -Wm-yj $(DEBUGFLAG)
 
 ROM_EXTENSION	:= gb
 
-PROJECT_NAME := $(subst $() $(),_,$(PROJECT_NAME))
+PROJECT_NAME	:= $(subst $() $(),_,$(PROJECT_NAME))
 
 ifeq ($(filter CGB,$(TARGETS)),) # Not targeting CGB, so disable CGB features
 	LCCFLAGS += -DCGB=0
 else
 	LCCFLAGS += -DCGB=1
 	ifeq ($(filter DMG,$(TARGETS))$(filter SGB,$(TARGETS)),) # Check if not targeting both CGB and DMG
-		LCCFLAGS += -Wm-yC
+		LCCLINKFLAGS += -Wm-yC
 	else
-		LCCFLAGS += -Wm-yc
+		LCCLINKFLAGS += -Wm-yc
 	endif
     ROM_EXTENSION := gbc
 endif
@@ -52,10 +55,10 @@ ifeq ($(filter SGB,$(TARGETS)),) # Not targeting SGB, so disable SGB features
 	LCCFLAGS += -DSGB=0
 else # Targeting SGB as well
 	LCCFLAGS += -DSGB=1
-	LCCFLAGS += -Wm-ys
+	LCCLINKFLAGS += -Wm-ys
 endif
 ifneq ($(findstring RAM,$(MBC)),)
-	LCCFLAGS += -Wm-yt2
+	LCCLINKFLAGS += -Wm-yt2
 endif
 
 Q ?= @
@@ -64,31 +67,26 @@ all: rom
 
 rom: $(PROJECT_NAME).$(ROM_EXTENSION)
 
-$(OBJDIR)/%.c.o: %.c
+$(info $(OBJ))
+
+$(OBJDIR)/%.c.asm: %.c
 	@echo Compiling $<
 	@mkdir -p $(dir $@)
-	$(Q)$(LCC) $(LCCFLAGS) -c -o $@ $<
+	$(Q)$(LCC) -S $(LCCFLAGS) -Wp-MMD -o $@ $< 
 
-$(OBJDIR)/%.s.o: %.s
+$(OBJDIR)/%.c.o: $(OBJDIR)/%.asm
 	@echo Compiling $<
 	@mkdir -p $(dir $@)
-	$(Q)$(LCC) $(LCCFLAGS) -c -o $@ $<
+	$(Q)$(LCC) -c $(LCCFLAGS) -Wp-MMD -Wp-MF$<.d -o $@ $< 
 
-$(OBJDIR)/%.c.d: %.c
+$(OBJDIR)/%.s.o: $(SRCDIR)/%.s
 	@echo Compiling $<
 	@mkdir -p $(dir $@)
-	$(Q)$(LCC) $(LCCFLAGS) -c -o $@ $< -Wp-MM
-
-$(OBJDIR)/%.s.d: %.c
-	@echo Compiling $<
-	@mkdir -p $(dir $@)
-	$(Q)$(LCC) $(LCCFLAGS) -c -o $@ $< -Wp-MM
-
-include $(OBJ:.o=.d)
+	$(Q)$(LCC) $(LCCFLAGS) -c -o $@ $< 
 
 $(PROJECT_NAME).$(ROM_EXTENSION): $(LIBS) $(OBJ)
 	@echo Making rom $@
-	$(Q)$(LCC) $(LCCFLAGS) -o $@ $^
+	$(Q)$(LCC) $(LCCLINKFLAGS) -o $@ $^
 
 clean: cleanRom cleanBuild
 
@@ -97,4 +95,3 @@ cleanRom:
 
 cleanBuild:
 	@rm -rf $(OBJDIR)
-	

@@ -1,17 +1,16 @@
 #include <gb/gb.h>
+#include <gb/cgb.h>
 #include <stdint.h>
 
 #include "asset.h"
+
+ASSET(penta, "penta.chr");
 
 void main(void)
 {
     while(1)
     {
         
-		// Game main loop processing goes here
-
-
-		// Done processing, yield CPU and wait for start of next frame
         wait_vbl_done();
     }
 }

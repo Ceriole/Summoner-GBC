@@ -28,6 +28,7 @@ Q ?= @
 
 $(OBJDIR)/$(RESDIR)/%.png: $(RESDIR)/%.ase $(RESDIR)/%.ase.opt
 	@echo Converting $<
+	@mkdir -p $(dir $@)
 	$(Q)$(ASE) $< $(FILEOPTS) --save-as $@
 
 # See https://rgbds.gbdev.io/docs/v0.6.0/rgbgfx.1 for RGBGFX options.
@@ -35,33 +36,41 @@ $(OBJDIR)/$(RESDIR)/%.png: $(RESDIR)/%.ase $(RESDIR)/%.ase.opt
 # Rules for Aseprite converted files
 $(OBJDIR)/$(RESDIR)/%.chr: $(OBJDIR)/$(RESDIR)/%.png
 	@echo Creating chr data $@
+	@mkdir -p $(dir $@)
 	$(Q)$(GFXCONV) $< $(FILEOPTS) -o $@
 
 $(OBJDIR)/$(RESDIR)/%.pal: $(OBJDIR)/$(RESDIR)/%.png
 	@echo Creating palette data $@
+	@mkdir -p $(dir $@)
 	$(Q)$(GFXCONV) $< $(FILEOPTS) -p $@
 
 $(OBJDIR)/$(RESDIR)/%.map: $(OBJDIR)/$(RESDIR)/%.png
 	@echo Creating map data $@
+	@mkdir -p $(dir $@)
 	$(Q)$(GFXCONV) $< $(FILEOPTS) -t $@
 
 $(OBJDIR)/$(RESDIR)/%.attrmap: $(OBJDIR)/$(RESDIR)/%.png
 	@echo Creating attribute map data $@
+	@mkdir -p $(dir $@)
 	$(Q)$(GFXCONV) $< $(FILEOPTS) -a $@
 
 # Rules for png files
 $(OBJDIR)/$(RESDIR)/%.chr: $(RESDIR)/%.png
 	@echo Creating chr data $@
+	@mkdir -p $(dir $@)
 	$(Q)$(GFXCONV) $< $(FILEOPTS) -o $@
 
 $(OBJDIR)/$(RESDIR)/%.pal: $(RESDIR)/%.png
 	@echo Creating palette data $@
+	@mkdir -p $(dir $@)
 	$(Q)$(GFXCONV) $< $(FILEOPTS) -p $@
 
 $(OBJDIR)/$(RESDIR)/%.map: $(RESDIR)/%.png
 	@echo Creating map data $@
+	@mkdir -p $(dir $@)
 	$(Q)$(GFXCONV) $< $(FILEOPTS) -t $@
 
 $(OBJDIR)/$(RESDIR)/%.attrmap: $(RESDIR)/%.png
 	@echo Creating attribute map data $@
+	@mkdir -p $(dir $@)
 	$(Q)$(GFXCONV) $< $(FILEOPTS) -a $@
