@@ -63,7 +63,7 @@ ASEPRITE_HOME		:= "C:/Program Files (x86)/Steam/steamapps/common/Aseprite"
 
 # RGBDS root directory (contains rgbasm.exe)
 RGBDS_HOME			:= C:/gbdev/rgbds60
-RGBDS51_HOME		:= C:/gbdev/rgbds51
+RGBDS_51_HOME		:= C:/gbdev/rgbds51
 
 # Uncomment below to echo important compiler calls.
 # Q :=

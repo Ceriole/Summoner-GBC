@@ -33,8 +33,8 @@ OBJ				= $(patsubst %, $(OBJDIR)/%.o, $(SRC) $(ASM))
 
 DEBUGFLAG		?= -debug
 INCFLAGS		= -I. -I$(SRCDIR)
-LCCFLAGS		= -c -msm83:gb $(INCFLAGS) $(DEBUGFLAG)
-LCCLINKFLAGS	= -msm83:gb $(INCFLAGS) -Wm-Z -Wm-yn"$(PROJECT_NAME)" -Wm-yj $(DEBUGFLAG)
+LCCFLAGS		= -msm83:gb $(INCFLAGS) $(DEBUGFLAG)
+ROMFLAGS		= -msm83:gb $(INCFLAGS) -Wm-Z -Wm-yn"$(PROJECT_NAME)" -Wm-yj $(DEBUGFLAG)
 
 ROM_EXTENSION	:= gb
 
@@ -45,9 +45,9 @@ ifeq ($(filter CGB,$(TARGETS)),) # Not targeting CGB, so disable CGB features
 else
 	LCCFLAGS += -DCGB=1
 	ifeq ($(filter DMG,$(TARGETS))$(filter SGB,$(TARGETS)),) # Check if not targeting both CGB and DMG
-		LCCLINKFLAGS += -Wm-yC
+		ROMFLAGS += -Wm-yC
 	else
-		LCCLINKFLAGS += -Wm-yc
+		ROMFLAGS += -Wm-yc
 	endif
     ROM_EXTENSION := gbc
 endif
@@ -55,10 +55,10 @@ ifeq ($(filter SGB,$(TARGETS)),) # Not targeting SGB, so disable SGB features
 	LCCFLAGS += -DSGB=0
 else # Targeting SGB as well
 	LCCFLAGS += -DSGB=1
-	LCCLINKFLAGS += -Wm-ys
+	ROMFLAGS += -Wm-ys
 endif
 ifneq ($(findstring RAM,$(MBC)),)
-	LCCLINKFLAGS += -Wm-yt2
+	ROMFLAGS += -Wm-yt2
 endif
 
 Q ?= @
@@ -67,17 +67,21 @@ all: rom
 
 rom: $(PROJECT_NAME).$(ROM_EXTENSION)
 
-$(info $(OBJ))
-
 $(OBJDIR)/%.c.asm: %.c
 	@echo Compiling $<
 	@mkdir -p $(dir $@)
-	$(Q)$(LCC) -S $(LCCFLAGS) -Wp-MMD -o $@ $< 
+	$(Q)$(LCC) -S $(LCCFLAGS) -o $@ $< 
 
-$(OBJDIR)/%.c.o: $(OBJDIR)/%.asm
+$(OBJDIR)/%.c.asm.d: $(OBJDIR)/%.c.asm
+	@echo 'Generating dependencies (asm) $<'
+	@mkdir -p $(dir $@)
+	$(Q)cat $< | grep -i '.incbin' | sed -E 's/\s+.incbin\s+\"([^\"]*)\"/$(subst /,\/,$(@:.asm.d=.o)): \1/gI' > $@
+-include $(OBJ:.c.o=.c.asm.d)
+
+$(OBJDIR)/%.c.o: $(OBJDIR)/%.c.asm
 	@echo Compiling $<
 	@mkdir -p $(dir $@)
-	$(Q)$(LCC) -c $(LCCFLAGS) -Wp-MMD -Wp-MF$<.d -o $@ $< 
+	$(Q)$(LCC) -c $(LCCFLAGS) -o $@ $<
 
 $(OBJDIR)/%.s.o: $(SRCDIR)/%.s
 	@echo Compiling $<
@@ -86,7 +90,7 @@ $(OBJDIR)/%.s.o: $(SRCDIR)/%.s
 
 $(PROJECT_NAME).$(ROM_EXTENSION): $(LIBS) $(OBJ)
 	@echo Making rom $@
-	$(Q)$(LCC) $(LCCLINKFLAGS) -o $@ $^
+	$(Q)$(LCC) $(ROMFLAGS) -o $@ $^
 
 clean: cleanRom cleanBuild
 
@@ -95,3 +99,5 @@ cleanRom:
 
 cleanBuild:
 	@rm -rf $(OBJDIR)
+
+.SECONDARY:

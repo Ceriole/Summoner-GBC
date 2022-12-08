@@ -8,9 +8,9 @@ ASSET(penta, "penta.chr");
 
 void main(void)
 {
-    while(1)
-    {
-        
-        wait_vbl_done();
-    }
+	while(1)
+	{
+		
+		wait_vbl_done();
+	}
 }
