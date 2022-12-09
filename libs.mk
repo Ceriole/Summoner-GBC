@@ -9,14 +9,14 @@ endif
 ifndef TOOLSDIR
 $(error TOOLSDIR is not set. Example "tools")
 endif
-ifndef RGBDS_51_HOME
-$(error RGBDS_51_HOME is not set. Example "C:/RGBDS51")
+ifndef RGBDS_HOME
+$(error RGBDS_HOME is not set. Example "C:/RGBDS51")
 endif
 
 HUGEDIR			?= $(LIBDIR)/hUGEDriver
 
 HUGETOOLS		:= $(HUGEDIR)/tools
-RGBASM			:= $(RGBDS_51_HOME)/rgbasm
+RGBASM			:= $(RGBDS_HOME)/rgbasm
 RGB2SDAS		:= $(TOOLSDIR)/rgb2sdas.exe
 
 HUGEASMFLAGS	:= -DGBDK -i$(HUGEDIR)
