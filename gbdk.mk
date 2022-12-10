@@ -23,7 +23,8 @@ ASM				= $(call rwildcard, $(SRCDIR), *.s)
 OBJ				= $(addprefix $(OBJDIR)/, $(SRC:.c=.o) $(ASM:.s=.o))
 
 DEBUGFLAG		?= -debug
-INCFLAGS		= -I. -I$(SRCDIR)
+INCDIRS			+= . $(SRCDIR)
+INCFLAGS		= $(addprefix -I, $(INCDIRS))
 CFLAGS			= $(INCFLAGS) -Wf-MMD $(DEBUGFLAG)
 LCCFLAGS		= -msm83:gb -Wm-yt0x1B -Wl-j -Wm-yC -Wm-yoA -Wm-ya4 -Wb-ext=.rel -Wb-v -Wm-Z -Wm-yn"$(PROJECT_NAME)" -Wm-yj -autobank
 

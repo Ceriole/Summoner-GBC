@@ -1,10 +1,14 @@
 #include "title.h"
 
+#include "hUGEDriver.h"
+
 #include "res/gen/title.h"
 #include "res/gen/bluefire.h"
 
 #include "gfx/object.h"
 #include "gfx/banked_gfx.h"
+
+extern const hUGESong_t music_blue_ocean;
 
 // Bank pragma for autobanking
 #pragma bank 255
@@ -27,6 +31,19 @@ void title_init(void) BANKED
 	VBK_REG = VBK_TILES;
 	/* Set attributes */
 	set_banked_bkg_tiles(0, 0, title_WIDTH / title_TILE_W, title_HEIGHT / title_TILE_H, title_map, BANK(title));
+
+	NR52_REG = 0x80;
+	NR51_REG = 0xFF;
+	NR50_REG = 0x77;
+
+	
+
+	// In your initializtion code
+	__critical {
+		hUGE_init(&music_blue_ocean);
+		add_VBL((int_handler) hUGE_dosound);
+	}
+
 
 	SHOW_BKG;
 	SHOW_SPRITES; SPRITES_8x16; 

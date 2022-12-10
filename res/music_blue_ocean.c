@@ -1,6 +1,8 @@
 #include "hUGEDriver.h"
 #include <stddef.h>
 
+#pragma bank 255
+
 static const unsigned char order_cnt = 44;
 
 static const unsigned char P0[] = {

@@ -10,6 +10,7 @@ TOOLSDIR		= tools
 PROJECT_NAME	:= SUMMONER
 
 LIBS			:= $(OBJDIR)/$(LIBDIR)/hUGEDriver/hUGEDriver.obj.o # $(OBJDIR)/$(LIBDIR)/gb-vwf/vwf.obj.o # TODO
+INCDIRS			:= $(LIBDIR)/hUGEDriver/include
 
 include gbdk.mk
 # Set to rgbds v5.1 for building hUGEDriver
