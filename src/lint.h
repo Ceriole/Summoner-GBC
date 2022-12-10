@@ -53,22 +53,9 @@
     #define __using(x)
     #define __interrupt(x)
     #define __naked
-
-    #define data
-    #define near 
-    #define idata
-    #define xdata
-    #define far
-    #define pdata
-    #define code
-    #define bit bool
-    #define sfr volatile unsigned char
-    #define sbit volatile bool
-    #define critical
-    #define at(x)
-    #define using(x)
-    #define interrupt(x)
-    #define naked
+    #define __banked
+    #define __asm
+    #define __endasm
 
     /* The tool Splint is available at http://www.splint.org
        Other tools might also be used for statically checking c-sources.
