@@ -4,7 +4,16 @@
 # Written by: @Ceriole
 ###########################################################
 
-include cfg.mk
+CONFIG			:= cfg.mk
+
+# Check for config file
+ifeq ("$(wildcard $(CONFIG))","")
+$(error Config file does not exist! Please create one in the same directory as 'Makefile'. See README.md for an example config file.)
+else
+$(info Loading config file $(CONFIG))
+endif
+
+include $(CONFIG)
 
 ifndef GBDK_HOME
 $(error GBDK_HOME is not set to the location of GBDK. Example "C:/gbdk")
@@ -85,14 +94,24 @@ LCCFLAGS		:= -msm83:gb -Wl-j -Wb-ext=.rel -Wb-v $(addprefix -Wm, $(ROMFLAGS)) -a
 RGBASMFLAGS		:= -DGBDK -i$(HUGEDIR) -i$(VWFDIR)
 RGBCONVFLAGS	:= -b255
 
+# MAKEFILE DEBUG INFO #####################################
+
+ifneq ($(Q),@)
+$(info Echoing commands.)
+$(info Target rom: $(BIN))
+$(info Detected C sources: $(SRC))
+$(info Detected ASM sources: $(ASM))
+$(info Detected Aseprite files: $(ASEFILES))
+$(info Detected PNG files: $(IMAGES))
+$(info Required libraries: $(LIBS))
+endif
+
 ###########################################################
 # RULES
 ###########################################################
 
-$(info $(METAFILES:.meta=))
-
 # Non-file rules
-.PHONY: all clean cleanBin
+.PHONY: all clean cleanObj cleanBin
 # Don't delete intermediate files
 .SECONDARY:
 # Enable secondary expansion
@@ -100,9 +119,6 @@ $(info $(METAFILES:.meta=))
 
 # Include dependency files
 -include $(DEPS)
-
-# Rule to catch generated header files
-%.h:
 
 # All
 all: $(BIN)
@@ -133,6 +149,9 @@ $(OBJDIR)/%.s: %.c
 	@mkdir -p $(dir $@)
 	$(Q)$(LCC) $(CFLAGS) -S -o $@ $<
 
+# Rule to catch generated header files
+%.h:
+
 # BINARY ##################################################
 $(PROJECT_NAME).$(EXT): $(LIBS) $(OBJ)
 	@echo 'Making ROM $@'
@@ -148,12 +167,12 @@ $(OBJDIR)/$(RESDIR)/%.png: $(RESDIR)/%.ase
 endif
 
 # Convert png files into source files
-$(OBJDIR)/$(RESDIR)/%.c: $(OBJDIR)/$(RESDIR)/%.png
+$(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(OBJDIR)/$(RESDIR)/%.png
 	@echo 'Converting $< to $@'
 	@mkdir -p $(dir $@)
 	$(Q)$(PNG2ASSET) $< $(shell cat $(patsubst $(OBJDIR)/%, %, $<).meta)  -c $@
 
-$(OBJDIR)/$(RESDIR)/%.c: $(RESDIR)/%.png
+$(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(RESDIR)/%.png
 	@echo 'Converting $< to $@'
 	@mkdir -p $(dir $@)
 	$(Q)$(PNG2ASSET) $< $(shell cat $<.meta) -c $@
@@ -174,7 +193,9 @@ $(OBJDIR)/%.obj: %.asm
 	$(Q)$(RGBASM) $(RGBASMFLAGS) $< -o $@
 
 # CLEAN ###################################################
-clean:
+clean: cleanObj cleanBin
+
+cleanObj:
 	@rm -rf $(OBJDIR)
 
 cleanBin:

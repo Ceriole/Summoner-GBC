@@ -56,15 +56,16 @@ After praying to the Gods and performing multiple blood sacrifies, A file called
 See below for an example `cfg.mk`.
 
 ```make
-# GBDK root directory (contains)
-GBDK_HOME			:= C:/gbdev/gbdk
+# System-Specific config file
+# Set the variables below to the correct paths for make to use.
+
+# GBDK root directory (contains 'bin/lcc.exe')
+GBDK_HOME			:= D:/gbdk
 # Aseprite executeable for 
-ASEPRITE_HOME		:= "C:/Program Files (x86)/Steam/steamapps/common/Aseprite"
+ASEPRITE_HOME		:= D:/SteamLibrary/steamapps/common/Aseprite
+# RGBDS root directory (contains 'rgbasm.exe')
+RGBDS_HOME			:= D:/RGBDS/5.1
 
-# RGBDS root directory (contains rgbasm.exe)
-RGBDS_HOME			:= C:/gbdev/rgbds60
-RGBDS_51_HOME		:= C:/gbdev/rgbds51
-
-# Uncomment below to echo important compiler calls.
+# Uncomment below to echo the generated console commands and debug info.
 # Q :=
 ```
