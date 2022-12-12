@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-void create_object(object_t* object, uint16_t x, uint16_t y, aabb_t collision, uint8_t tile_idx, animation_t* animations, metasprite_t** metasprites) NONBANKED
+void create_object(object_t* object, uint16_t x, uint16_t y, aabb_t collision, uint8_t tile_idx, const animation_t** animations, const metasprite_t** metasprites) NONBANKED
 {
     memset(object, 0, sizeof(object_t));
     object->x = x;
@@ -10,14 +10,15 @@ void create_object(object_t* object, uint16_t x, uint16_t y, aabb_t collision, u
     object->collision = collision;
     object->animations = animations;
     object->metasprites = metasprites;
-    object->anim_timer = object->animations[0].delay;
-    object->ms_idx = object->animations[0].frames[0];
+    object->anim_timer = animations[0]->delay;
+    object->ms_idx = animations[0]->frames[0];
     object->tile_idx = tile_idx;
 }
 
 void obj_update(object_t* object)
 {
-    animation_t* curr_anim = &object->animations[object->anim_idx];
+    const animation_t* curr_anim = object->animations[object->anim_idx];
+    
     if(object->anim_timer == 0)
     {
         object->anim_timer = curr_anim->delay;
@@ -26,6 +27,8 @@ void obj_update(object_t* object)
             object->frame_idx = 0;
         object->ms_idx = curr_anim->frames[object->frame_idx];
     }
+    else
+        object->anim_timer--;
     if(object->timer)
         object->timer--;
 }
@@ -65,9 +68,10 @@ void obj_set_anim(object_t* object, uint8_t anim_idx) NONBANKED
 {
     if(object->anim_idx == anim_idx)
         return;
-    object->anim_timer = object->animations[anim_idx].delay;
+    animation_t* base_anim = object->animations[anim_idx];
+    object->anim_timer = base_anim->delay;
     object->frame_idx = 0;
-    object->ms_idx = object->animations[anim_idx].frames[0];
+    object->ms_idx = base_anim->frames[0];
     object->anim_idx = anim_idx;
 }
 

@@ -28,8 +28,8 @@ typedef struct
     uint16_t x, y;
     aabb_t collision;
     uint8_t tile_idx;
-    animation_t* animations;
-    metasprite_t** metasprites;
+    const animation_t** animations;
+    const metasprite_t** metasprites;
     uint8_t ms_idx, frame_idx, anim_idx, anim_timer;
     uint8_t timer;
     uint8_t flip_h : 1;
@@ -39,7 +39,7 @@ typedef struct
     uint8_t flash : 1;
 } object_t;
 
-void create_object(object_t* object, uint16_t x, uint16_t y, aabb_t collision, uint8_t tile_idx, animation_t* animations, metasprite_t** metasprites) NONBANKED;
+void create_object(object_t* object, uint16_t x, uint16_t y, aabb_t collision, uint8_t tile_idx, const animation_t** animations, const metasprite_t** metasprites) NONBANKED;
 
 void obj_update(object_t* object) NONBANKED;
 uint8_t obj_render(object_t* object, uint8_t oam_idx) NONBANKED;

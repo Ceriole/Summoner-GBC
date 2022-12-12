@@ -112,8 +112,6 @@ endif
 
 # Non-file rules
 .PHONY: all clean cleanObj cleanBin
-# Don't delete intermediate files
-.SECONDARY:
 # Enable secondary expansion
 .SECONDEXPANSION:
 
@@ -167,7 +165,7 @@ $(OBJDIR)/$(RESDIR)/%.png: $(RESDIR)/%.ase
 endif
 
 # Convert png files into source files
-$(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(OBJDIR)/$(RESDIR)/%.png
+$(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(OBJDIR)/$(RESDIR)/%.png $$()
 	@echo 'Converting $< to $@'
 	@mkdir -p $(dir $@)
 	$(Q)$(PNG2ASSET) $< $(shell cat $(patsubst $(OBJDIR)/%, %, $<).meta)  -c $@
