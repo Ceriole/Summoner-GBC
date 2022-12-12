@@ -6,9 +6,9 @@
 
 #include "gfx/banked_gfx.h"
 
-#include "res/gen/gbc_required.h"
+#include "res/gbc_required.h"
 
-static const uint8_t scanline_offsets_tbl[] = {0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0};
+static const uint8_t scanline_offsets_tbl[] = {0, 1, 1, 1, 2, 2, 2, 1, 1, 1, 0, 0, 0, 1, 1, 1};
 static const uint8_t * scanline_offsets = scanline_offsets_tbl;
 
 // Bank pragma for autobanking

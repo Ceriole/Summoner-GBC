@@ -2,8 +2,8 @@
 
 #include "hUGEDriver.h"
 
-#include "res/gen/title.h"
-#include "res/gen/bluefire.h"
+#include "res/title.h"
+#include "res/bluefire.h"
 
 #include "gfx/object.h"
 #include "gfx/banked_gfx.h"
@@ -12,6 +12,8 @@ extern const hUGESong_t music_blue_ocean;
 
 // Bank pragma for autobanking
 #pragma bank 255
+
+
 
 BANKREF(title_init)
 void title_init(void) BANKED
@@ -23,27 +25,23 @@ void title_init(void) BANKED
 
 	set_banked_bkg_data(0u, title_TILE_COUNT, title_tiles, BANK(title));
 	/* Select VRAM bank 1 */
-	VBK_REG = VBK_ATTRIBUTES;
+	rVBK = VBK_ATTRIBUTES;
 	/* Set attributes */
 	set_banked_bkg_tiles(0, 0, title_WIDTH / title_TILE_W, title_HEIGHT / title_TILE_H, title_map_attributes, BANK(title));
 
 	/* Select VRAM bank 1 */
-	VBK_REG = VBK_TILES;
+	rVBK = VBK_TILES;
 	/* Set attributes */
 	set_banked_bkg_tiles(0, 0, title_WIDTH / title_TILE_W, title_HEIGHT / title_TILE_H, title_map, BANK(title));
 
-	NR52_REG = 0x80;
-	NR51_REG = 0xFF;
-	NR50_REG = 0x77;
-
-	
+	rAUDENA = AUDENA_ON;
+	rAUDTERM = 0xFF;
+	rAUDVOL = AUDVOL_VOL_LEFT(0x7) | AUDVOL_VIN_LEFT | AUDVOL_VOL_RIGHT(0x7) | AUDVOL_VIN_RIGHT;
 
 	// In your initializtion code
 	__critical {
 		hUGE_init(&music_blue_ocean);
-		add_VBL((int_handler) hUGE_dosound);
 	}
-
 
 	SHOW_BKG;
 	SHOW_SPRITES; SPRITES_8x16; 
