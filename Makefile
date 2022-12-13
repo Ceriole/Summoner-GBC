@@ -24,6 +24,9 @@ endif
 ifndef ASEPRITE_HOME
 $(warning ASEPRITE_HOME is not set to the location of Aseprite. Aseprite files cannot be exported!)
 endif
+ifndef PY
+$(error PY is not set to python executeable! Example "py", "python", "python3")
+endif
 
 ###########################################################
 # VARIABLES
@@ -55,9 +58,9 @@ LCC				:= $(GBDK_HOME)/bin/lcc
 RGBASM			:= $(RGBDS_HOME)/rgbasm
 PNG2ASSET		:= $(GBDK_HOME)/bin/png2asset
 RGB2SDAS		:= $(TOOLSDIR)/rgb2sdas.exe
-MAKEFONT		:= python3 $(VWFDIR)/make_font.py
+MAKEFONT		:= $(PY) $(VWFDIR)/make_font.py
 ASEPRITE		:= $(ASEPRITE_HOME)/Aseprite.exe -b
-ASEANIMS		:= python3 $(TOOLSDIR)/animgen.py
+ASEANIMS		:= $(PY) $(TOOLSDIR)/animgen.py
 
 # PROJECT PROPERTIES ######################################
 # Name of your project, will set the name of the ROM.

@@ -65,6 +65,8 @@ GBDK_HOME			:= D:/gbdk
 ASEPRITE_HOME		:= D:/SteamLibrary/steamapps/common/Aseprite
 # RGBDS root directory (contains 'rgbasm.exe')
 RGBDS_HOME			:= D:/RGBDS/5.1
+# Python command for running scripts ('py', 'python', 'python3')
+PY					:= py
 
 # Uncomment below to echo the generated console commands and debug info.
 # Q :=
