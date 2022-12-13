@@ -52,12 +52,13 @@ void title_init(void) BANKED
 	rAUDVOL = AUDVOL_VOL_LEFT(0x7) | AUDVOL_VIN_LEFT | AUDVOL_VOL_RIGHT(0x7) | AUDVOL_VIN_RIGHT;
 	// In your initializtion code
 	CRITICAL {
+		rIE = IEF_VBLANK;
 		hUGE_init(&music_blue_ocean);
 	}
 
 	aabb_t button_bb;
 	create_object(&button_prompt_a, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, button_prompt_anims, buttons_metasprites);
-	create_object(&button_prompt_b, OBJ_SCRN_TO_POS(SCREENWIDTH - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, button_prompt_anims, buttons_metasprites);
+	create_object(&button_prompt_b, OBJ_SCRN_TO_POS(SCREENWIDTH - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8 - 16), button_bb, bluefire_TILE_COUNT, button_prompt_anims, buttons_metasprites);
 	obj_set_anim(&button_prompt_a, 0);
 	obj_set_anim(&button_prompt_b, 2);
 
@@ -104,6 +105,6 @@ void title_loop(void) BANKED
 		hide_sprites_range(oam_idx, 40);
 
 		last_joys = joys;
-        wait_vbl_done();
+		wait_vbl_done();
 	}
 }

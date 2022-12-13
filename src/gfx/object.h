@@ -37,11 +37,10 @@ typedef struct
     const metasprite_t** metasprites;
     uint8_t ms_idx, frame_idx, anim_idx, anim_timer;
     uint8_t timer;
-    uint8_t flip_h : 1;
-    uint8_t flip_v : 1;
-    uint8_t collides : 1;
-    uint8_t hide : 1;
-    uint8_t flash : 1;
+    uint8_t flip_h, flip_v;
+    uint8_t collides;
+    uint8_t hide;
+    uint8_t flash;
 } object_t;
 
 void create_object(object_t* object, uint16_t x, uint16_t y, aabb_t collision, uint8_t tile_idx, const animation_t** animations, const metasprite_t** metasprites) NONBANKED;

@@ -13,11 +13,11 @@ void main(void)
 		screen_cgb_required(); // Catch if the system is not a color gameboy
 	else
 	{
-		__critical {
+		CRITICAL {
 			add_VBL((int_handler) hUGE_dosound);
 		}
 		
-		cpu_fast(); // Only available on CGB (hardware emulated )
+		cpu_fast(); // Only available on CGB (hardware emulated)
 
 		title_sequence();
 	}

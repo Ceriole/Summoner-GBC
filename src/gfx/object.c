@@ -40,14 +40,16 @@ uint8_t obj_render(object_t* object, uint8_t oam_idx) NONBANKED
 		hide_metasprite(current_sprite, oam_idx);
 	else
 	{
+		const uint8_t obj_scr_x = OBJ_POS_TO_SCRN(object->x);
+		const uint8_t obj_scr_y = OBJ_POS_TO_SCRN(object->y);
 		if(object->flip_h && object->flip_v)
-			oam_idx = move_metasprite_hvflip(current_sprite, object->tile_idx, oam_idx, OBJ_POS_TO_SCRN(object->x), OBJ_POS_TO_SCRN(object->y));
+			oam_idx += move_metasprite_hvflip(current_sprite, object->tile_idx, oam_idx, obj_scr_x, obj_scr_y);
 		else if(object->flip_h)
-			oam_idx = move_metasprite_hflip(current_sprite, object->tile_idx, oam_idx, OBJ_POS_TO_SCRN(object->x), OBJ_POS_TO_SCRN(object->y));
+			oam_idx += move_metasprite_hflip(current_sprite, object->tile_idx, oam_idx, obj_scr_x, obj_scr_y);
 		else if(object->flip_v)
-			oam_idx = move_metasprite_vflip(current_sprite, object->tile_idx, oam_idx, OBJ_POS_TO_SCRN(object->x), OBJ_POS_TO_SCRN(object->y));
+			oam_idx += move_metasprite_vflip(current_sprite, object->tile_idx, oam_idx, obj_scr_x, obj_scr_y);
 		else
-			oam_idx = move_metasprite(current_sprite, object->tile_idx, oam_idx, OBJ_POS_TO_SCRN(object->x), OBJ_POS_TO_SCRN(object->y));
+			oam_idx += move_metasprite(current_sprite, object->tile_idx, oam_idx, obj_scr_x, obj_scr_y);
 	}
 	return oam_idx;
 }

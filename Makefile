@@ -35,6 +35,7 @@ Q ?= @
 # MAKE FUNCTIONS ##########################################
 # Recursive wildcard: $(call rwildcard, <dir>, <pattern>): Returns all files in a directory including subdirectories
 rwildcard		=	$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+getmetafile		=	$(shell cat $(1:$(OBJDIR)/%=%).meta)
 
 # PROJECT DIRECTORIES #####################################
 OBJDIR			:= build
@@ -56,6 +57,7 @@ PNG2ASSET		:= $(GBDK_HOME)/bin/png2asset
 RGB2SDAS		:= $(TOOLSDIR)/rgb2sdas.exe
 MAKEFONT		:= python3 $(VWFDIR)/make_font.py
 ASEPRITE		:= $(ASEPRITE_HOME)/Aseprite.exe -b
+ASEANIMS		:= python3 $(TOOLSDIR)/animgen.py
 
 # PROJECT PROPERTIES ######################################
 # Name of your project, will set the name of the ROM.
@@ -161,19 +163,27 @@ ifdef ASEPRITE_HOME
 $(OBJDIR)/$(RESDIR)/%.png: $(RESDIR)/%.ase
 	@echo 'Exporting $< to $@'
 	@mkdir -p $(dir $@)
-	$(Q)$(ASEPRITE) $< $(shell cat $<.meta)  --sheet $@ >/dev/null
+	$(Q)$(ASEPRITE) $< $(call getmetafile, $<) --sheet $@
+$(OBJDIR)/$(RESDIR)/%.json: $(RESDIR)/%.ase
+	@echo 'Exporting $< animations to $@'
+	@mkdir -p $(dir $@)
+	$(Q)$(ASEPRITE) $< $(call getmetafile, $@) --format json-array --data $@
+$(OBJDIR)/$(RESDIR)/%_anim.c $(OBJDIR)/$(RESDIR)/%_anim.h: $(OBJDIR)/$(RESDIR)/%.json
+	@echo 'Converting $< animations to $@'
+	@mkdir -p $(dir $@)
+	$(Q)$(ASEANIMS) $< $(call getmetafile, $(<:.json=.anim)) -o $@
 endif
 
 # Convert png files into source files
-$(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(OBJDIR)/$(RESDIR)/%.png $$()
+$(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(OBJDIR)/$(RESDIR)/%.png
 	@echo 'Converting $< to $@'
 	@mkdir -p $(dir $@)
-	$(Q)$(PNG2ASSET) $< $(shell cat $(patsubst $(OBJDIR)/%, %, $<).meta)  -c $@
+	$(Q)$(PNG2ASSET) $< $(call getmetafile, $<) -c $@
 
 $(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(RESDIR)/%.png
 	@echo 'Converting $< to $@'
 	@mkdir -p $(dir $@)
-	$(Q)$(PNG2ASSET) $< $(shell cat $<.meta) -c $@
+	$(Q)$(PNG2ASSET) $< $(call getmetafile, $<) -c $@
 
 # LIBRARIES ###############################################
 # Convert RGBDS .obj files into SDAS .o files
