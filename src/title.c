@@ -14,13 +14,17 @@ extern const hUGESong_t music_blue_ocean;
 // Bank pragma for autobanking
 #pragma bank 255
 
-const animation_t buttom_anim_a_press = {6, 10, {0, 1, 2, 3, 4, 5}};
-const animation_t buttom_anim_a_mash = {3, 8, {6, 7, 8}};
-const animation_t* const button_prompt_anims[2] = {
-	&buttom_anim_a_press, &buttom_anim_a_mash
+const animation_t button_anim_a_press = {6, {{0, 12}, {1, 5}, {2, 3}, {3, 3}, {4, 3}, {5, 6}}};
+const animation_t button_anim_a_mash = {3, {{6, 3}, {7, 3}, {8, 5}}};
+const animation_t button_anim_b_press = {6, {{9, 12}, {10, 5}, {11, 3}, {12, 3}, {13, 3}, {14, 6}}};
+const animation_t button_anim_b_mash = {3, {{15, 3}, {16, 3}, {17, 5}}};
+const animation_t* const button_prompt_anims[4] = {
+	&button_anim_a_press, &button_anim_a_mash,
+	&button_anim_b_press, &button_anim_b_mash
 };
 
-object_t button_prompt;
+joypads_t joys, last_joys;
+object_t button_prompt_a, button_prompt_b;
 
 BANKREF(title_init)
 void title_init(void) BANKED
@@ -52,13 +56,17 @@ void title_init(void) BANKED
 	}
 
 	aabb_t button_bb;
-	create_object(&button_prompt, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, button_prompt_anims, buttons_metasprites);
-	obj_set_anim(&button_prompt, 0);
+	create_object(&button_prompt_a, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, button_prompt_anims, buttons_metasprites);
+	create_object(&button_prompt_b, OBJ_SCRN_TO_POS(SCREENWIDTH - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, button_prompt_anims, buttons_metasprites);
+	obj_set_anim(&button_prompt_a, 0);
+	obj_set_anim(&button_prompt_b, 2);
 
 	SHOW_BKG;
 	SHOW_SPRITES; SPRITES_8x16; 
 	enable_interrupts();
 	DISPLAY_ON;
+
+	joypad_init(1, &joys);
 }
 
 BANKREF(title_sequence)
@@ -72,12 +80,30 @@ void title_sequence(void) BANKED
 BANKREF(title_loop)
 void title_loop(void) BANKED
 {
-    while(1)
-    {
-		obj_update(&button_prompt);
+	while(1)
+	{
+		joypad_ex(&joys);
+		if(joys.joy0 != last_joys.joy0)
+		{
+			if(joys.joy0 & J_A)
+				obj_set_anim(&button_prompt_a, 1);
+			else
+				obj_set_anim(&button_prompt_a, 0);
+			if(joys.joy0 & J_B)
+				obj_set_anim(&button_prompt_b, 3);
+			else
+				obj_set_anim(&button_prompt_b, 2);
+		}
+
+		obj_update(&button_prompt_a);
+		obj_update(&button_prompt_b);
+
 		uint8_t oam_idx = 0;
-		oam_idx = obj_render(&button_prompt, oam_idx);
+		oam_idx = obj_render(&button_prompt_a, oam_idx);
+		oam_idx = obj_render(&button_prompt_b, oam_idx);
 		hide_sprites_range(oam_idx, 40);
+
+		last_joys = joys;
         wait_vbl_done();
-    }
+	}
 }

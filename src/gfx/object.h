@@ -11,10 +11,15 @@
 
 #define BIT(B) (1 << (B))
 
+typedef struct animframe_t
+{
+    uint8_t ms_idx, delay;
+} animframe_t;
+
 typedef struct animation_t
 {
-    uint8_t length, delay;
-    uint8_t frames[];
+    uint8_t length;
+    animframe_t frames[];
 } animation_t;
 
 typedef struct aabb_t
