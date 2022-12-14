@@ -60,7 +60,7 @@ PNG2ASSET		:= $(GBDK_HOME)/bin/png2asset
 RGB2SDAS		:= $(TOOLSDIR)/rgb2sdas.exe
 MAKEFONT		:= $(PY) $(VWFDIR)/make_font.py
 ASEPRITE		:= $(ASEPRITE_HOME)/Aseprite.exe -b
-ASEANIMS		:= $(PY) $(TOOLSDIR)/animgen.py
+ANIMGEN			:= $(PY) $(TOOLSDIR)/animgen.py
 
 # PROJECT PROPERTIES ######################################
 # Name of your project, will set the name of the ROM.
@@ -74,6 +74,7 @@ ROMFLAGS		:= -Z -yt0x1B -yC -yoA -ya4 -yn"$(PROJECT_NAME)" -yj
 METAFILES		:= $(call rwildcard, $(RESDIR), *.meta)
 ASEFILES		:= $(call rwildcard, $(RESDIR), *.ase)
 ASEIMAGES		:= $(filter $(METAFILES:.meta=), $(ASEFILES:.ase=.png))
+ASEANIMS		:= $(filter $(METAFILES:.anim.meta=_anim.c), $(ASEFILES:%.ase=%_anim.c))
 IMAGES			:= $(filter $(METAFILES:.meta=), $(filter-out $(ASEIMAGES), $(call rwildcard, $(RESDIR), *.png)))
 
 # SOURCE FILES ############################################
@@ -85,7 +86,7 @@ SRC				:= $(call rwildcard, $(SRCDIR), *.c) $(call rwildcard, $(RESDIR), *.c)
 # Assembly source files
 ASM				:= $(call rwildcard, $(SRCDIR), *.s)
 # Project object files
-OBJ				:= $(addprefix $(OBJDIR)/, $(IMAGES:.png=.o) $(ASEIMAGES:.png=.o) $(SRC:.c=.o) $(ASM:.s=.o))
+OBJ				:= $(addprefix $(OBJDIR)/, $(IMAGES:.png=.o) $(ASEIMAGES:.png=.o) $(ASEANIMS:.c=.o) $(SRC:.c=.o) $(ASM:.s=.o))
 # Library object files
 LIBS			:= $(OBJDIR)/$(HUGEDIR)/hUGEDriver.obj.o # $(OBJDIR)/$(VWFDIR)/vwf.obj.o # TODO
 DEPS			:= $(OBJ:.o=.d)
@@ -106,9 +107,12 @@ $(info Echoing commands.)
 $(info Target rom: $(BIN))
 $(info Detected C sources: $(SRC))
 $(info Detected ASM sources: $(ASM))
+$(info Detected meta files: $(METAFILES))
 $(info Detected Aseprite files: $(ASEFILES))
+$(info Detected animation files: $(ASEANIMS))
 $(info Detected PNG files: $(IMAGES))
 $(info Required libraries: $(LIBS))
+$(info Object files: $(OBJ))
 endif
 
 ###########################################################
@@ -166,15 +170,15 @@ ifdef ASEPRITE_HOME
 $(OBJDIR)/$(RESDIR)/%.png: $(RESDIR)/%.ase
 	@echo 'Exporting $< to $@'
 	@mkdir -p $(dir $@)
-	$(Q)$(ASEPRITE) $< $(call getmetafile, $<) --sheet $@
+	$(Q)$(ASEPRITE) $< $(call getmetafile, $<) --sheet $@ >/dev/null
 $(OBJDIR)/$(RESDIR)/%.json: $(RESDIR)/%.ase
 	@echo 'Exporting $< animations to $@'
 	@mkdir -p $(dir $@)
-	$(Q)$(ASEPRITE) $< $(call getmetafile, $@) --format json-array --data $@
+	$(Q)$(ASEPRITE) $< $(call getmetafile, $@) --filename-format {title}-{tag}-{tagframe}.{extension} --format json-array --data $@
 $(OBJDIR)/$(RESDIR)/%_anim.c $(OBJDIR)/$(RESDIR)/%_anim.h: $(OBJDIR)/$(RESDIR)/%.json
 	@echo 'Converting $< animations to $@'
 	@mkdir -p $(dir $@)
-	$(Q)$(ASEANIMS) $< $(call getmetafile, $(<:.json=.anim)) -o $@
+	$(Q)$(ANIMGEN) $< $(call getmetafile, $(<:.json=.anim)) -o $@
 endif
 
 # Convert png files into source files

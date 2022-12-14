@@ -5,23 +5,15 @@
 #include "res/title.h"
 #include "res/bluefire.h"
 #include "res/buttons.h"
+#include "res/buttons_anim.h"
 
 #include "gfx/object.h"
 #include "gfx/banked_gfx.h"
 
-extern const hUGESong_t music_blue_ocean;
-
 // Bank pragma for autobanking
 #pragma bank 255
 
-const animation_t button_anim_a_press = {6, {{0, 12}, {1, 5}, {2, 3}, {3, 3}, {4, 3}, {5, 6}}};
-const animation_t button_anim_a_mash = {3, {{6, 3}, {7, 3}, {8, 5}}};
-const animation_t button_anim_b_press = {6, {{9, 12}, {10, 5}, {11, 3}, {12, 3}, {13, 3}, {14, 6}}};
-const animation_t button_anim_b_mash = {3, {{15, 3}, {16, 3}, {17, 5}}};
-const animation_t* const button_prompt_anims[4] = {
-	&button_anim_a_press, &button_anim_a_mash,
-	&button_anim_b_press, &button_anim_b_mash
-};
+extern const hUGESong_t music_blue_ocean;
 
 joypads_t joys, last_joys;
 object_t button_prompt_a, button_prompt_b;
@@ -57,8 +49,8 @@ void title_init(void) BANKED
 	}
 
 	aabb_t button_bb;
-	create_object(&button_prompt_a, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, button_prompt_anims, buttons_metasprites);
-	create_object(&button_prompt_b, OBJ_SCRN_TO_POS(SCREENWIDTH - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8 - 16), button_bb, bluefire_TILE_COUNT, button_prompt_anims, buttons_metasprites);
+	create_object(&button_prompt_a, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
+	create_object(&button_prompt_b, OBJ_SCRN_TO_POS(SCREENWIDTH - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8 - 16), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
 	obj_set_anim(&button_prompt_a, 0);
 	obj_set_anim(&button_prompt_b, 2);
 
