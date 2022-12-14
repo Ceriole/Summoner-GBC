@@ -123,6 +123,10 @@ endif
 .PHONY: all clean cleanObj cleanBin
 # Enable secondary expansion
 .SECONDEXPANSION:
+ifneq ($(Q),@)
+# Disable deletion of intermediate file
+.SECONDARY:
+endif
 
 # Include dependency files
 -include $(DEPS)
@@ -174,7 +178,7 @@ $(OBJDIR)/$(RESDIR)/%.png: $(RESDIR)/%.ase
 $(OBJDIR)/$(RESDIR)/%.json: $(RESDIR)/%.ase
 	@echo 'Exporting $< animations to $@'
 	@mkdir -p $(dir $@)
-	$(Q)$(ASEPRITE) $< $(call getmetafile, $@) --filename-format {title}-{tag}-{tagframe}.{extension} --format json-array --data $@
+	$(Q)$(ASEPRITE) $< $(call getmetafile, $@) --list-tags --filename-format {title}-{tag}-{tagframe}.{extension} --format json-array --data $@
 $(OBJDIR)/$(RESDIR)/%_anim.c $(OBJDIR)/$(RESDIR)/%_anim.h: $(OBJDIR)/$(RESDIR)/%.json
 	@echo 'Converting $< animations to $@'
 	@mkdir -p $(dir $@)

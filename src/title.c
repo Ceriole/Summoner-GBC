@@ -16,7 +16,7 @@
 extern const hUGESong_t music_blue_ocean;
 
 joypads_t joys, last_joys;
-object_t button_prompt_a, button_prompt_b;
+object_t button_prompt_a, button_prompt_b, button_prompt_pad;
 
 BANKREF(title_init)
 void title_init(void) BANKED
@@ -38,7 +38,7 @@ void title_init(void) BANKED
 	rVBK = VBK_TILES;
 	/* Set attributes */
 	set_banked_bkg_tiles(0, 0, title_WIDTH / title_TILE_W, title_HEIGHT / title_TILE_H, title_map, BANK(title));
-
+ 
 	rAUDENA = AUDENA_ON;
 	rAUDTERM = 0xFF;
 	rAUDVOL = AUDVOL_VOL_LEFT(0x7) | AUDVOL_VIN_LEFT | AUDVOL_VOL_RIGHT(0x7) | AUDVOL_VIN_RIGHT;
@@ -50,9 +50,11 @@ void title_init(void) BANKED
 
 	aabb_t button_bb;
 	create_object(&button_prompt_a, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
-	create_object(&button_prompt_b, OBJ_SCRN_TO_POS(SCREENWIDTH - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8 - 16), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
-	obj_set_anim(&button_prompt_a, 0);
-	obj_set_anim(&button_prompt_b, 2);
+	create_object(&button_prompt_b, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 16 - 9), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
+	create_object(&button_prompt_pad, OBJ_SCRN_TO_POS(16 + 16 + 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
+	obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_INDEX);
+	obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_INDEX);
+	obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DPAD_INDEX);
 
 	SHOW_BKG;
 	SHOW_SPRITES; SPRITES_8x16; 
@@ -79,21 +81,29 @@ void title_loop(void) BANKED
 		if(joys.joy0 != last_joys.joy0)
 		{
 			if(joys.joy0 & J_A)
-				obj_set_anim(&button_prompt_a, 1);
+				obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_MASH_INDEX);
 			else
-				obj_set_anim(&button_prompt_a, 0);
+				obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_INDEX);
 			if(joys.joy0 & J_B)
-				obj_set_anim(&button_prompt_b, 3);
+				obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_MASH_INDEX);
 			else
-				obj_set_anim(&button_prompt_b, 2);
+				obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_INDEX);
+			if(joys.joy0 & J_UP)
+				obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_UP_PRESS_INDEX);
+			else if(joys.joy0 & J_DOWN)
+				obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DOWN_PRESS_INDEX);
+			else
+				obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DPAD_INDEX);
 		}
 
 		obj_update(&button_prompt_a);
 		obj_update(&button_prompt_b);
+		obj_update(&button_prompt_pad);
 
 		uint8_t oam_idx = 0;
 		oam_idx = obj_render(&button_prompt_a, oam_idx);
 		oam_idx = obj_render(&button_prompt_b, oam_idx);
+		oam_idx = obj_render(&button_prompt_pad, oam_idx);
 		hide_sprites_range(oam_idx, 40);
 
 		last_joys = joys;
