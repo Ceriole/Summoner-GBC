@@ -33,7 +33,9 @@ endif
 ###########################################################
 
 # Suppress console output if $(Q) wasn't defined already.
-Q ?= @
+ifndef ECHO_CMD
+Q 				:= @
+endif
 
 # MAKE FUNCTIONS ##########################################
 # Recursive wildcard: $(call rwildcard, <dir>, <pattern>): Returns all files in a directory including subdirectories
@@ -46,9 +48,11 @@ SRCDIR			:= src
 RESDIR			:= res
 LIBDIR			:= lib
 TOOLSDIR		:= tools
+FONTSDIR		:= $(RESDIR)/fonts
 # LIBRARY DIRECTORIES #####################################
 HUGEDIR			:= $(LIBDIR)/hUGEDriver
 VWFDIR			:= $(LIBDIR)/gb-vwf
+HARDWAREINC		:= $(LIBDIR)/hardware.inc
 # INCLUDE DIRECTORIES #####################################
 HUGEINCDIR		:= $(HUGEDIR)/include
 INCDIRS			:= $(SRCDIR) $(OBJDIR) $(HUGEINCDIR)
@@ -73,10 +77,11 @@ ROMFLAGS		:= -Z -yt0x1B -yC -yoA -ya4 -yn"$(PROJECT_NAME)" -yj
 # RESOURCE FILES ###########################################
 METAFILES		:= $(call rwildcard, $(RESDIR), *.meta)
 ASEFILES		:= $(call rwildcard, $(RESDIR), *.ase)
+FONTS			:= $(call rwildcard, $(FONTSDIR), *.png)
+VWFFILES		:= $(FONTS:%.png=$(OBJDIR)/%.vwf)
 ASEIMAGES		:= $(filter $(METAFILES:.meta=), $(ASEFILES:.ase=.png))
 ASEANIMS		:= $(filter $(METAFILES:.anim.meta=_anim.c), $(ASEFILES:%.ase=%_anim.c))
-IMAGES			:= $(filter $(METAFILES:.meta=), $(filter-out $(ASEIMAGES), $(call rwildcard, $(RESDIR), *.png)))
-
+IMAGES			:= $(filter $(METAFILES:.meta=), $(filter-out $(FONTS:.vwf=.png) $(ASEIMAGES), $(call rwildcard, $(RESDIR), *.png)))
 # SOURCE FILES ############################################
 # ROM file
 ROMFILENAME		:= $(subst $() $(),_,$(PROJECT_NAME))
@@ -86,9 +91,8 @@ SRC				:= $(call rwildcard, $(SRCDIR), *.c) $(call rwildcard, $(RESDIR), *.c)
 # Assembly source files
 ASM				:= $(call rwildcard, $(SRCDIR), *.s)
 # Project object files
-OBJ				:= $(addprefix $(OBJDIR)/, $(IMAGES:.png=.o) $(ASEIMAGES:.png=.o) $(ASEANIMS:.c=.o) $(SRC:.c=.o) $(ASM:.s=.o))
-# Library object files
-LIBS			:= $(OBJDIR)/$(HUGEDIR)/hUGEDriver.obj.o # $(OBJDIR)/$(VWFDIR)/vwf.obj.o # TODO
+OBJ				:= $(addprefix $(OBJDIR)/, $(IMAGES:.png=.o) $(ASEIMAGES:.png=.o) $(ASEANIMS:.c=.o) $(SRC:.c=.o) $(ASM:.s=.o) $(HUGEDIR)/hUGEDriver.obj.o $(LIBDIR)/vwf_gbdk.obj.o)
+# Generated dependency files
 DEPS			:= $(OBJ:.o=.d)
 
 # FLAGS ###################################################
@@ -97,22 +101,23 @@ DEBUGFLAG		?= -debug
 INCFLAGS		:= $(addprefix -I, $(INCDIRS))
 CFLAGS			:= $(INCFLAGS) -Wf-MMD $(DEBUGFLAG)
 LCCFLAGS		:= -msm83:gb -Wl-j -Wb-ext=.rel -Wb-v $(addprefix -Wm, $(ROMFLAGS)) -autobank
-RGBASMFLAGS		:= -DGBDK -i$(HUGEDIR) -i$(VWFDIR)
+RGBASMFLAGS		:= -Wno-obsolete -DGBDK $(addprefix -i, $(HUGEDIR) $(VWFDIR) $(LIBDIR) $(OBJDIR))
 RGBCONVFLAGS	:= -b255
 
 # MAKEFILE DEBUG INFO #####################################
 
-ifneq ($(Q),@)
+ifdef ECHO_DATA
 $(info Echoing commands.)
 $(info Target rom: $(BIN))
-$(info Detected C sources: $(SRC))
-$(info Detected ASM sources: $(ASM))
-$(info Detected meta files: $(METAFILES))
-$(info Detected Aseprite files: $(ASEFILES))
-$(info Detected animation files: $(ASEANIMS))
-$(info Detected PNG files: $(IMAGES))
-$(info Required libraries: $(LIBS))
+$(info C sources: $(SRC))
+$(info ASM sources: $(ASM))
+$(info Meta files: $(METAFILES))
+$(info Aseprite files: $(ASEFILES))
+$(info Animation files: $(ASEANIMS))
+$(info PNG files: $(IMAGES))
+$(info Font files: $(FONTS))
 $(info Object files: $(OBJ))
+$(info Dependency files: $(DEPS))
 endif
 
 ###########################################################
@@ -164,9 +169,9 @@ $(OBJDIR)/%.s: %.c
 %.h:
 
 # BINARY ##################################################
-$(PROJECT_NAME).$(EXT): $(LIBS) $(OBJ)
+$(PROJECT_NAME).$(EXT): $(OBJ)
 	@echo 'Making ROM $@'
-	$(Q)$(LCC) $(LCCFLAGS) $(CFLAGS) -o $@ $^
+	$(Q)$(LCC) $(LCCFLAGS) $(CFLAGS) $^ -o $@ 
 
 # RESOURCES ###############################################
 # Export asesprite files only if Aseprite is set.
@@ -196,6 +201,12 @@ $(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(RESDIR)/%.png
 	@mkdir -p $(dir $@)
 	$(Q)$(PNG2ASSET) $< $(call getmetafile, $<) -c $@
 
+# Generate vwf font files
+$(OBJDIR)/$(FONTSDIR)/%.vwf: $(FONTSDIR)/%.png
+	@echo 'Generating font $@'
+	@mkdir -p $(dir $@)
+	$(Q)$(MAKEFONT) $< $@
+
 # LIBRARIES ###############################################
 # Convert RGBDS .obj files into SDAS .o files
 $(OBJDIR)/%.obj.o: $(OBJDIR)/%.obj $(RGB2SDAS)
@@ -205,11 +216,15 @@ $(OBJDIR)/%.obj.o: $(OBJDIR)/%.obj $(RGB2SDAS)
 # rgb2sdas makes a incompatible file, just due to the O flag. The below command replaces '-mgbz80' (SDCC <= 4.1.0) with '-msm83' (SDCC >= 4.2.0)
 	$(Q)sed -i 's/-mgbz80/-msm83/' $@
 
+# Make VWF require font files.
+$(OBJDIR)/$(LIBDIR)/vwf_gbdk.obj: $(VWFFILES)
+
 # Compile RGBDS .asm assembly files to RGBDS .obj files
 $(OBJDIR)/%.obj: %.asm
 	@echo 'Compiling (RGBDS) $<'
 	@mkdir -p $(dir $@)
 	$(Q)$(RGBASM) $(RGBASMFLAGS) $< -o $@
+
 
 # CLEAN ###################################################
 clean: cleanObj cleanBin

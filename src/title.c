@@ -10,12 +10,13 @@
 #include "gfx/object.h"
 #include "gfx/banked_gfx.h"
 
+#include "sys/input.h"
+
 // Bank pragma for autobanking
 #pragma bank 255
 
 extern const hUGESong_t music_blue_ocean;
 
-joypads_t joys, last_joys;
 object_t button_prompt_a, button_prompt_b, button_prompt_pad;
 
 BANKREF(title_init)
@@ -77,24 +78,22 @@ void title_loop(void) BANKED
 {
 	while(1)
 	{
-		joypad_ex(&joys);
-		if(joys.joy0 != last_joys.joy0)
-		{
-			if(joys.joy0 & J_A)
-				obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_MASH_INDEX);
-			else
-				obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_INDEX);
-			if(joys.joy0 & J_B)
-				obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_MASH_INDEX);
-			else
-				obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_INDEX);
-			if(joys.joy0 & J_UP)
-				obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_UP_PRESS_INDEX);
-			else if(joys.joy0 & J_DOWN)
-				obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DOWN_PRESS_INDEX);
-			else
-				obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DPAD_INDEX);
-		}
+		input_update();
+
+		if(joys.joy0 & J_A)
+			obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_MASH_INDEX);
+		else
+			obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_INDEX);
+		if(joys.joy0 & J_B)
+			obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_MASH_INDEX);
+		else
+			obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_INDEX);
+		if(joys.joy0 & J_UP)
+			obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_UP_PRESS_INDEX);
+		else if(joys.joy0 & J_DOWN)
+			obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DOWN_PRESS_INDEX);
+		else
+			obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DPAD_INDEX);
 
 		obj_update(&button_prompt_a);
 		obj_update(&button_prompt_b);
@@ -106,7 +105,6 @@ void title_loop(void) BANKED
 		oam_idx = obj_render(&button_prompt_pad, oam_idx);
 		hide_sprites_range(oam_idx, 40);
 
-		last_joys = joys;
 		wait_vbl_done();
 	}
 }

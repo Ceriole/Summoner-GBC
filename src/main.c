@@ -4,6 +4,7 @@
 
 #include "title.h"
 #include "sys/screens.h"
+#include "sys/input.h"
 
 #include "hUGEDriver.h"
 
@@ -13,6 +14,7 @@ void main(void)
 		screen_cgb_required(); // Catch if the system is not a color gameboy
 	else
 	{
+		input_init(1);
 		CRITICAL {
 			add_VBL((int_handler) hUGE_dosound);
 		}
