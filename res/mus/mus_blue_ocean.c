@@ -2308,4 +2308,4 @@ static const unsigned char waves[] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 };
 
-const hUGESong_t music_blue_ocean = {3, &order_cnt, order1, order2, order3,order4, duty_instruments, wave_instruments, noise_instruments, NULL, waves};
+const hUGESong_t mus_blue_ocean = {3, &order_cnt, order1, order2, order3,order4, duty_instruments, wave_instruments, noise_instruments, NULL, waves};

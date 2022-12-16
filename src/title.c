@@ -15,7 +15,7 @@
 // Bank pragma for autobanking
 #pragma bank 255
 
-extern const hUGESong_t music_blue_ocean;
+extern const hUGESong_t mus_blue_ocean;
 
 object_t button_prompt_a, button_prompt_b, button_prompt_pad;
 
@@ -46,7 +46,7 @@ void title_init(void) BANKED
 	// In your initializtion code
 	CRITICAL {
 		rIE = IEF_VBLANK;
-		hUGE_init(&music_blue_ocean);
+		hUGE_init(&mus_blue_ocean);
 	}
 
 	aabb_t button_bb;

@@ -1,10 +1,3 @@
-
 [submodule "lib/hUGEDriver"]
 	path = lib/hUGEDriver
 	url = https://github.com/SuperDisk/hUGEDriver.git
-[submodule "lib/gb-vwf"]
-	path = lib/gb-vwf
-	url = https://github.com/ISSOtm/gb-vwf
-[submodule "lib/hardware.inc"]
-	path = lib/hardware.inc
-	url = https://github.com/gbdev/hardware.inc
