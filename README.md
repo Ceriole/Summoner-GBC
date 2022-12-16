@@ -94,6 +94,9 @@ RGBDS_HOME			:= D:/RGBDS/5.1
 # Python command/executeable path for running scripts ('py', 'python' or 'python3')
 PY					:= py
 
-# Uncomment below to echo the generated console commands and debug info.
-# Q :=
+# Uncomment below to echo the generated console commands.
+# ECHO_CMD	 		:= 1
+
+# Uncomment below to echo makefile data.
+# ECHO_DATA			:= 1
 ```
