@@ -1,6 +1,8 @@
 #include "hUGEDriver.h"
 #include <stddef.h>
 
+#pragma bank 255
+
 static const unsigned char order_cnt = 2;
 
 static const unsigned char P0[] = {
@@ -16,7 +18,7 @@ static const unsigned char P0[] = {
     DN(___,0,0x000),
     DN(___,0,0x000),
     DN(___,0,0x000),
-    DN(___,0,0x600),
+    DN(___,0,0x000),
     DN(___,0,0x000),
     DN(___,0,0x000),
     DN(___,0,0x000),
@@ -378,4 +380,5 @@ static const unsigned char waves[] = {
     72,17,206,133,50,103,118,152,75,200,35,29,116,216,204,25,
 };
 
+BANKREF(mus_cerisoft)
 const hUGESong_t mus_cerisoft = {8, &order_cnt, order1, order2, order3,order4, duty_instruments, wave_instruments, noise_instruments, NULL, waves};

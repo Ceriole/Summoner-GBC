@@ -104,7 +104,7 @@ INCFLAGS		:= $(addprefix -I, $(INCDIRS))
 CFLAGS			:= $(INCFLAGS) -Wf-MMD $(DEBUGFLAG)
 LCCFLAGS		:= -msm83:gb -Wl-j -Wb-ext=.rel -Wb-v $(addprefix -Wm, $(ROMFLAGS)) -autobank
 RGBASMFLAGS		:= -Wno-obsolete -DGBDK $(addprefix -i, $(HUGEDIR) $(VWFDIR) $(LIBDIR) $(OBJDIR))
-RGBCONVFLAGS	:= -b255
+RGBCONVFLAGS	:= -b0
 
 # MAKEFILE DEBUG INFO #####################################
 

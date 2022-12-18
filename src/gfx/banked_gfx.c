@@ -1,4 +1,4 @@
-#include "banked_func.h"
+#include "sys/banked_func.h"
 
 #include <gbdk/platform.h>
 #include <gb/gb.h>

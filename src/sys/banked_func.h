@@ -5,9 +5,9 @@
 #include <gb/gb.h>
 #include <stdint.h>
 
-#define BANKED_DATA_FUNC_EXTERN(FUNCNAME, ...) void FUNCNAME(__VA_ARGS__, uint8_t bank) NONBANKED
+#define BANKED_DATA_FUNC_EXTERN(FUNCNAME, ...) void FUNCNAME(__VA_ARGS__, uint8_t bank) CRITICAL NONBANKED
 #define BANKED_DATA_FUNC(FUNCNAME, FUNCCALL, ...) \
-    void FUNCNAME(__VA_ARGS__, uint8_t bank) NONBANKED \
+    void FUNCNAME(__VA_ARGS__, uint8_t bank) CRITICAL NONBANKED \
     { \
         uint8_t save = _current_bank; \
         SWITCH_ROM(bank); \

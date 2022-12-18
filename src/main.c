@@ -15,12 +15,9 @@ void main(void)
 	else
 	{
 		input_init(1);
-		CRITICAL {
-			add_VBL((int_handler) hUGE_dosound);
-		}
 		
 		cpu_fast(); // Only available on CGB (hardware emulated)
-
+		screen_studio();
 		title_sequence();
 	}
 }

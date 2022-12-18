@@ -1,7 +1,7 @@
 #ifndef __BANKED_GFX_H__
 #define __BANKED_GFX_H__
 
-#include "banked_func.h"
+#include "sys/banked_func.h"
 
 BANKED_DATA_FUNC_EXTERN(set_banked_bkg_data, uint8_t first_tile, uint8_t nb_tiles, const uint8_t* data);
 BANKED_DATA_FUNC_EXTERN(set_banked_sprite_data, uint8_t first_tile, uint8_t nb_tiles, const uint8_t* data);
@@ -15,4 +15,4 @@ BANKED_DATA_FUNC_EXTERN(set_banked_bkg_based_submap, uint8_t x, uint8_t y, uint8
 BANKED_DATA_FUNC_EXTERN(set_banked_bkg_palette, uint8_t first_palette, uint8_t nb_palettes, const palette_color_t* rgb_data);
 BANKED_DATA_FUNC_EXTERN(set_banked_sprite_palette, uint8_t first_palette, uint8_t nb_palettes, const palette_color_t* rgb_data);
 
-#endif
+#endif //  __BANKED_GFX_H__

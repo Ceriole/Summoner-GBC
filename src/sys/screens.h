@@ -6,4 +6,7 @@
 void screen_cgb_required(void) BANKED;
 BANKREF_EXTERN(screen_cgb_required)
 
+void screen_studio(void) BANKED;
+BANKREF_EXTERN(screen_cgb_required)
+
 #endif // __SCREENS_H__
