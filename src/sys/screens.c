@@ -1,3 +1,6 @@
+// Bank pragma for autobanking
+#pragma bank 255
+
 #include "screens.h"
 
 #include <gbdk/platform.h>
@@ -9,16 +12,12 @@
 #include "res/screens/gbc_required.h"
 #include "res/screens/cerisoft.h"
 
-#include "sys/hUGE_banked.h"
+#include "sys/music.h"
 
 static const uint8_t cgb_req_scanline_offsets_tbl[] = {0, 1, 1, 1, 2, 2, 2, 1, 1, 1, 0, 0, 0, 1, 1, 1};
 static const uint8_t * cgb_req_scanline_offsets = cgb_req_scanline_offsets_tbl;
 
-BANKREF_EXTERN(mus_cerisoft)
-extern const hUGESong_t mus_cerisoft;
-
-// Bank pragma for autobanking
-#pragma bank 255
+DECLARE_MUSIC(mus_cerisoft);
 
 BANKREF(screen_cgb_required_isr)
 void screen_cgb_required_isr() BANKED {
@@ -36,7 +35,7 @@ void screen_cgb_required(void) BANKED
         STAT_REG = STATF_MODE01 | STATF_MODE00;
         add_LCD(screen_cgb_required_isr);
     }
-    set_interrupts(VBL_IFLAG | LCD_IFLAG);
+    set_interrupts(VBL_IFLAG | TIM_IFLAG | LCD_IFLAG);
 
     while (1) {
         wait_vbl_done();        
@@ -77,8 +76,6 @@ void screen_studio(void) BANKED
 	rAUDVOL = AUDVOL_VOL_LEFT(0x7) | AUDVOL_VIN_LEFT | AUDVOL_VOL_RIGHT(0x7) | AUDVOL_VIN_RIGHT;
     
     SHOW_BKG; DISPLAY_ON;
-    set_interrupts(VBL_IFLAG);
-	enable_interrupts();
 	
     cerisoft_timer = CERISOFT_PREFADE_DELAY;
     cerisoft_state = CERISOFT_STATE_PREFADE;
@@ -94,7 +91,7 @@ void screen_studio(void) BANKED
                 cerisoft_timer = CERISOFT_FADEIN_DELAY;
                 cerisoft_fadein_idx = 0;
                 cerisoft_state = CERISOFT_STATE_FADE_IN;
-                hUGE_banked_init(&mus_cerisoft, BANK(mus_cerisoft));
+                music_play(&mus_cerisoft, BANK(mus_cerisoft));
             }
             break;
         case CERISOFT_STATE_FADE_IN:
@@ -118,7 +115,6 @@ void screen_studio(void) BANKED
             break;
         }
 
-        hUGE_banked_dosound();
         wait_vbl_done();
     }
 }

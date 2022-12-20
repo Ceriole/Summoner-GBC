@@ -49,6 +49,7 @@ RESDIR			:= res
 LIBDIR			:= lib
 TOOLSDIR		:= tools
 FONTSDIR		:= $(RESDIR)/fonts
+MUSDIR			:= $(RESDIR)/music
 # LIBRARY DIRECTORIES #####################################
 HUGEDIR			:= $(LIBDIR)/hUGEDriver
 VWFDIR			:= $(LIBDIR)/vwf
@@ -62,10 +63,11 @@ RGBINCDIRS		:= $(HUGEDIR) $(VWFDIR) $(LIBDIR) $(OBJDIR)
 LCC				:= $(GBDK_HOME)/bin/lcc
 RGBASM			:= $(RGBDS_HOME)/rgbasm
 PNG2ASSET		:= $(GBDK_HOME)/bin/png2asset
-RGB2SDAS		:= $(TOOLSDIR)/rgb2sdas.exe
+RGB2SDAS		:= $(TOOLSDIR)/rgb2sdas
 MAKEFONT		:= $(PY) $(TOOLSDIR)/make_font.py
 ASEPRITE		:= $(ASEPRITE_HOME)/Aseprite.exe -b
 ANIMGEN			:= $(PY) $(TOOLSDIR)/animgen.py
+UGE2SRC			:= $(TOOLSDIR)/uge2source.exe
 
 # PROJECT PROPERTIES ######################################
 # Name of your project, will set the name of the ROM.
@@ -83,17 +85,18 @@ VWFFILES		:= $(addprefix $(OBJDIR)/, $(FONTS:.png=.vwf))
 ASEIMAGES		:= $(filter $(METAFILES:.meta=), $(ASEFILES:.ase=.png))
 ASEANIMS		:= $(filter $(METAFILES:.anim.meta=_anim.c), $(ASEFILES:%.ase=%_anim.c))
 IMAGES			:= $(filter-out $(FONTS), $(filter $(METAFILES:.meta=), $(ASEIMAGES), $(call rwildcard, $(RESDIR), *.png)))
+UGEFILES		:= $(call rwildcard, $(MUSDIR), *.uge)
 
 # SOURCE FILES ############################################
 # ROM file
 ROMFILENAME		:= $(subst $() $(),_,$(PROJECT_NAME))
 BIN				:= $(ROMFILENAME).$(EXT)
 # C source files
-SRC				:= $(call rwildcard, $(SRCDIR), *.c) $(call rwildcard, $(RESDIR), *.c)
+SRC				:= $(call rwildcard, $(SRCDIR), *.c) $(call rwildcard, $(RESDIR), *.c)  $(call rwildcard, $(VWFDIR), *.c)
 # Assembly source files
-ASM				:= $(call rwildcard, $(SRCDIR), *.s)
+ASM				:= $(call rwildcard, $(SRCDIR), *.s) $(call rwildcard, $(VWFDIR), *.s)
 # Project object files
-OBJ				:= $(addprefix $(OBJDIR)/, $(IMAGES:.png=.o) $(ASEIMAGES:.png=.o) $(ASEANIMS:.c=.o) $(SRC:.c=.o) $(ASM:.s=.o) $(HUGEDIR)/hUGEDriver.obj.o $(VWFDIR)/vwf_gbdk.obj.o)
+OBJ				:= $(addprefix $(OBJDIR)/, $(IMAGES:.png=.o) $(ASEIMAGES:.png=.o) $(ASEANIMS:.c=.o) $(SRC:.c=.o) $(ASM:.s=.o) $(UGEFILES:.uge=.o) $(HUGEDIR)/hUGEDriver.obj.o)
 # Generated dependency files
 DEPS			:= $(OBJ:.o=.d)
 
@@ -196,7 +199,7 @@ $(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(OBJDIR)/$(RESDIR)/%.png
 	@echo 'Converting $< to $@'
 	@mkdir -p $(dir $@)
 	$(Q)$(PNG2ASSET) $< $(call getmetafile, $<) -c $@
-
+ 
 $(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(RESDIR)/%.png
 	@echo 'Converting $< to $@'
 	@mkdir -p $(dir $@)
@@ -206,19 +209,23 @@ $(OBJDIR)/$(RESDIR)/%.c $(OBJDIR)/$(RESDIR)/%.h: $(RESDIR)/%.png
 $(OBJDIR)/$(FONTSDIR)/%.vwf: $(FONTSDIR)/%.png
 	@echo 'Generating font $@'
 	@mkdir -p $(dir $@)
-	$(Q)$(MAKEFONT) $< $@
+	$(Q)$(M67AKEFONT) $< $@
+
+# Generate source files from hUGE files.
+.SECONDARY: $(addprefix $(OBJDIR)/, $(UGEFILES:.uge=.c))
+$(OBJDIR)/$(MUSDIR)/%.c: $(MUSDIR)/%.uge
+	@echo 'Exporting music file $< to C'
+	@mkdir -p $(dir $@)
+	$(Q)$(UGE2SRC) $< -b 255 $(basename $(@F)) $@
 
 # LIBRARIES ###############################################
 # Convert RGBDS .obj files into SDAS .o files
-$(OBJDIR)/%.obj.o: $(OBJDIR)/%.obj $(RGB2SDAS)
+$(OBJDIR)/%.obj.o: $(OBJDIR)/%.obj
 	@echo 'Converting $< into SDAS...'
 	@mkdir -p $(dir $@)
 	$(Q)$(RGB2SDAS) $(RGBCONVFLAGS) $<
 # rgb2sdas makes a incompatible file, just due to the O flag. The below command replaces '-mgbz80' (SDCC <= 4.1.0) with '-msm83' (SDCC >= 4.2.0)
 	$(Q)sed -i 's/-mgbz80/-msm83/' $@
-
-# Make VWF require font files.
-$(OBJDIR)/$(VWFDIR)/vwf_gbdk.obj: $(VWFFILES)
 
 # Compile RGBDS .asm assembly files to RGBDS .obj files
 $(OBJDIR)/%.obj: %.asm

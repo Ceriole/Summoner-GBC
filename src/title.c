@@ -1,6 +1,6 @@
 #include "title.h"
 
-#include "sys/hUGE_banked.h"
+#include "sys/music.h"
 
 #include "res/screens/title.h"
 #include "res/sprites/bluefire.h"
@@ -41,12 +41,8 @@ void title_init(void) BANKED
 	/* Set attributes */
 	set_banked_bkg_tiles(0, 0, title_WIDTH / title_TILE_W, title_HEIGHT / title_TILE_H, title_map, BANK(title));
  
-	rAUDENA = AUDENA_ON;
-	rAUDTERM = 0xFF;
-	rAUDVOL = AUDVOL_VOL_LEFT(0x7) | AUDVOL_VIN_LEFT | AUDVOL_VOL_RIGHT(0x7) | AUDVOL_VIN_RIGHT;
-	// In your initializtion code
-	set_interrupts(VBL_IFLAG);
-	hUGE_banked_init(&mus_title, BANK(mus_title));
+	set_interrupts(VBL_IFLAG | TIM_IFLAG);
+	music_play(&mus_title, BANK(mus_title));
 
 	aabb_t button_bb;
 	create_object(&button_prompt_a, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
@@ -58,7 +54,6 @@ void title_init(void) BANKED
 
 	SHOW_BKG;
 	SHOW_SPRITES; SPRITES_8x16; 
-	enable_interrupts();
 	DISPLAY_ON;
 
 	joypad_init(1, &joys);
@@ -104,7 +99,6 @@ void title_loop(void) BANKED
 		oam_idx = obj_render(&button_prompt_pad, oam_idx);
 		hide_sprites_range(oam_idx, 40);
 
-		hUGE_banked_dosound();
 		wait_vbl_done();
 	}
 }
