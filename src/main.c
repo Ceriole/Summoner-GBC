@@ -7,7 +7,8 @@
 #include "sys/input.h"
 #include "sys/music.h"
 
-void LCD_isr() NONBANKED {
+void LCD_isr() NONBANKED
+{
 	if (LYC_REG == 0) {
 		if (WY_REG == 0) {
 			HIDE_SPRITES;
@@ -21,9 +22,14 @@ void LCD_isr() NONBANKED {
 	}
 }
 
+void VBL_global() NONBANKED
+{
+	input_update();
+}
 
 void main(void)
 {
+	input_init(1);
 	CRITICAL
 	{
 		TMA_REG = DEVICE_SUPPORTS_COLOR ? 120U : 0xBCU;
@@ -32,6 +38,7 @@ void main(void)
 		add_low_priority_TIM(music_callback);
 		STAT_REG |= STATF_MODE00;
 		add_LCD(LCD_isr);
+		add_VBL(VBL_global);
 	}
 	music_init;
 	set_interrupts(VBL_IFLAG | TIM_IFLAG | LCD_IFLAG);
@@ -40,9 +47,7 @@ void main(void)
 	else
 	{
 		cpu_fast(); // Only available on CGB (hardware emulated)
-			
-		input_init(1);
-
+		
 		screen_studio();
 		title_sequence();
 	}

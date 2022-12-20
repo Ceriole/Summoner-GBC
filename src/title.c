@@ -72,8 +72,6 @@ void title_loop(void) BANKED
 {
 	while(1)
 	{
-		input_update();
-
 		if(joys.joy0 & J_A)
 			obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_MASH_INDEX);
 		else
