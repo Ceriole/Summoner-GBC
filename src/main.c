@@ -29,6 +29,9 @@ void VBL_global() NONBANKED
 
 void main(void)
 {
+	for (uint8_t i = 4; i != 0; i--) {
+		wait_vbl_done();
+	}
 	input_init(1);
 	CRITICAL
 	{

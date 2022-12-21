@@ -11,6 +11,9 @@
 #include "gfx/banked_gfx.h"
 
 #include "sys/input.h"
+#include "sys/fade.h"
+
+#include "sys/palette.h"
 
 // Bank pragma for autobanking
 #pragma bank 255
@@ -23,9 +26,9 @@ object_t button_prompt_a, button_prompt_b, button_prompt_pad;
 BANKREF(title_init)
 void title_init(void) BANKED
 {
-    set_banked_bkg_palette(BKGF_CGB_PAL0, title_PALETTE_COUNT, (palette_color_t*) title_palettes, BANK(title));
-	set_banked_sprite_palette(OAMF_CGB_PAL0, bluefire_PALETTE_COUNT, (palette_color_t*) bluefire_palettes, BANK(bluefire));
-	set_banked_sprite_palette(OAMF_CGB_PAL0 + bluefire_PALETTE_COUNT, buttons_PALETTE_COUNT, (palette_color_t*) buttons_palettes, BANK(buttons));
+	load_palette(PAL_TYPE_BG, BKGF_CGB_PAL0, title_PALETTE_COUNT, title_palettes, BANK(title));
+	load_palette(PAL_TYPE_OBJ, OAMF_CGB_PAL0, bluefire_PALETTE_COUNT, bluefire_palettes, BANK(bluefire));
+	load_palette(PAL_TYPE_OBJ, OAMF_CGB_PAL0 + bluefire_PALETTE_COUNT, buttons_PALETTE_COUNT, buttons_palettes, BANK(buttons));
 
 	set_banked_sprite_data(0u, bluefire_TILE_COUNT, bluefire_tiles, BANK(bluefire));
 	set_banked_sprite_data(bluefire_TILE_COUNT, buttons_TILE_COUNT, buttons_tiles, BANK(buttons));
@@ -52,18 +55,25 @@ void title_init(void) BANKED
 	obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_INDEX);
 	obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DPAD_INDEX);
 
+	obj_update(&button_prompt_a);
+	obj_update(&button_prompt_b);
+	obj_update(&button_prompt_pad);
+
+	uint8_t oam_idx = 0;
+	oam_idx = obj_render(&button_prompt_a, oam_idx);
+	oam_idx = obj_render(&button_prompt_b, oam_idx);
+	oam_idx = obj_render(&button_prompt_pad, oam_idx);
+	hide_sprites_range(oam_idx, 40);
+
 	SHOW_BKG;
 	SHOW_SPRITES; SPRITES_8x16; 
-	DISPLAY_ON;
-
-	joypad_init(1, &joys);
 }
 
 BANKREF(title_sequence)
 void title_sequence(void) BANKED
 {
     title_init();
-    
+    fade_out(5);
     title_loop();
 }
 
