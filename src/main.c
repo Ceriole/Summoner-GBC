@@ -39,14 +39,21 @@ void main(void)
 		TAC_REG = 0x04u;
 
 		add_low_priority_TIM(music_callback);
-		STAT_REG |= STATF_MODE00;
-		add_LCD(LCD_isr);
+
 		add_VBL(VBL_global);
+
+		STAT_REG |= 0x40;
+		add_LCD(LCD_isr);
 	}
 	music_init;
+	LCDC_REG |= LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON;
 	set_interrupts(VBL_IFLAG | TIM_IFLAG | LCD_IFLAG);
+	WY_REG = 160u;
+	DISPLAY_ON;
 	if(!DEVICE_SUPPORTS_COLOR)
+	{
 		screen_cgb_required(); // Catch if the system is not a color gameboy
+	}
 	else
 	{
 		cpu_fast(); // Only available on CGB (hardware emulated)

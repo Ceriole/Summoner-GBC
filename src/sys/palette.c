@@ -12,7 +12,7 @@ void load_palette(pal_type_e pal_type, uint8_t first_palette, uint8_t nb_palette
 	if(first_palette + nb_palettes > 8)
 		return; //Adding more palettes than supported
 
-	uint16_t* pal_ptr = (pal_type == PAL_TYPE_BG) ? fade_bg_pal : fade_obj_pal;
+	palette_color_t* pal_ptr = (pal_type == PAL_TYPE_BG) ? fade_bg_pal : fade_obj_pal;
     uint8_t __save = _current_bank;
     SWITCH_ROM(bank);
 	if(pal_type == PAL_TYPE_BG) {
@@ -20,6 +20,7 @@ void load_palette(pal_type_e pal_type, uint8_t first_palette, uint8_t nb_palette
 	} else {
 		set_sprite_palette(first_palette, nb_palettes, rgb_data);
 	}
+	// load to fade palette buffers
 	memcpy(&pal_ptr[first_palette << 2], rgb_data, nb_palettes << 3);
     SWITCH_ROM(__save);
 }

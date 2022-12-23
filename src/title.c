@@ -1,3 +1,6 @@
+// Bank pragma for autobanking
+#pragma bank 255
+
 #include "title.h"
 
 #include "sys/music.h"
@@ -15,23 +18,18 @@
 
 #include "sys/palette.h"
 
-// Bank pragma for autobanking
-#pragma bank 255
-
-BANKREF_EXTERN(mus_title)
-extern const hUGESong_t mus_title;
-
-object_t button_prompt_a, button_prompt_b, button_prompt_pad;
+DECLARE_MUSIC(mus_title);
 
 BANKREF(title_init)
 void title_init(void) BANKED
 {
+	SPRITES_8x16;
+
 	load_palette(PAL_TYPE_BG, BKGF_CGB_PAL0, title_PALETTE_COUNT, title_palettes, BANK(title));
 	load_palette(PAL_TYPE_OBJ, OAMF_CGB_PAL0, bluefire_PALETTE_COUNT, bluefire_palettes, BANK(bluefire));
-	load_palette(PAL_TYPE_OBJ, OAMF_CGB_PAL0 + bluefire_PALETTE_COUNT, buttons_PALETTE_COUNT, buttons_palettes, BANK(buttons));
+	fade_set(0);
 
 	set_banked_sprite_data(0u, bluefire_TILE_COUNT, bluefire_tiles, BANK(bluefire));
-	set_banked_sprite_data(bluefire_TILE_COUNT, buttons_TILE_COUNT, buttons_tiles, BANK(buttons));
 
 	set_banked_bkg_data(0u, title_TILE_COUNT, title_tiles, BANK(title));
 	/* Select VRAM bank 1 */
@@ -43,37 +41,14 @@ void title_init(void) BANKED
 	rVBK = VBK_TILES;
 	/* Set attributes */
 	set_banked_bkg_tiles(0, 0, title_WIDTH / title_TILE_W, title_HEIGHT / title_TILE_H, title_map, BANK(title));
- 
-	set_interrupts(VBL_IFLAG | TIM_IFLAG);
-	music_play(&mus_title, BANK(mus_title));
-
-	aabb_t button_bb;
-	create_object(&button_prompt_a, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
-	create_object(&button_prompt_b, OBJ_SCRN_TO_POS(SCREENWIDTH - 16 - 16 - 9), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
-	create_object(&button_prompt_pad, OBJ_SCRN_TO_POS(16 + 16 + 8), OBJ_SCRN_TO_POS(SCREENHEIGHT - 16 - 8), button_bb, bluefire_TILE_COUNT, buttons_anim, buttons_metasprites);
-	obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_INDEX);
-	obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_INDEX);
-	obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DPAD_INDEX);
-
-	obj_update(&button_prompt_a);
-	obj_update(&button_prompt_b);
-	obj_update(&button_prompt_pad);
-
-	uint8_t oam_idx = 0;
-	oam_idx = obj_render(&button_prompt_a, oam_idx);
-	oam_idx = obj_render(&button_prompt_b, oam_idx);
-	oam_idx = obj_render(&button_prompt_pad, oam_idx);
-	hide_sprites_range(oam_idx, 40);
-
-	SHOW_BKG;
-	SHOW_SPRITES; SPRITES_8x16; 
 }
 
 BANKREF(title_sequence)
 void title_sequence(void) BANKED
 {
     title_init();
-    fade_out(5);
+	music_play(&mus_title, BANK(mus_title));
+    fade_in(10);
     title_loop();
 }
 
@@ -82,30 +57,6 @@ void title_loop(void) BANKED
 {
 	while(1)
 	{
-		if(joys.joy0 & J_A)
-			obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_MASH_INDEX);
-		else
-			obj_set_anim(&button_prompt_a, BUTTONS_ANIM_A_INDEX);
-		if(joys.joy0 & J_B)
-			obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_MASH_INDEX);
-		else
-			obj_set_anim(&button_prompt_b, BUTTONS_ANIM_B_INDEX);
-		if(joys.joy0 & J_UP)
-			obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_UP_PRESS_INDEX);
-		else if(joys.joy0 & J_DOWN)
-			obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DOWN_PRESS_INDEX);
-		else
-			obj_set_anim(&button_prompt_pad, BUTTONS_ANIM_DPAD_INDEX);
-
-		obj_update(&button_prompt_a);
-		obj_update(&button_prompt_b);
-		obj_update(&button_prompt_pad);
-
-		uint8_t oam_idx = 0;
-		oam_idx = obj_render(&button_prompt_a, oam_idx);
-		oam_idx = obj_render(&button_prompt_b, oam_idx);
-		oam_idx = obj_render(&button_prompt_pad, oam_idx);
-		hide_sprites_range(oam_idx, 40);
 
 		wait_vbl_done();
 	}

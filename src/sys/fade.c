@@ -4,8 +4,6 @@
 #include "palette.h"
 #include "math.h"
 
-#define FADE_STEP_COUNT 5
-
 palette_color_t fade_bg_pal[GBC_PAL_COUNT * GBC_PAL_COLOR_COUNT];
 palette_color_t fade_obj_pal[GBC_PAL_COUNT * GBC_PAL_COLOR_COUNT];
 
@@ -16,11 +14,11 @@ uint8_t fade_in_op(palette_color_t c, palette_color_t i)
 
 palette_color_t update_color(uint8_t fade_step, palette_color_t col)
 {
-	uint16_t fade_mask = shift_right(0x1F, FADE_STEP_COUNT - fade_step);
+	uint16_t fade_mask = shift_right(0x1F, FADE_STEP_END - fade_step);
 	return PAL_RGB8(
-		PAL_RED(col)	| fade_mask,
-		PAL_GREEN(col)	| fade_mask,
-		PAL_BLUE(col)	| fade_mask
+		PAL_RED(col)	& fade_mask,
+		PAL_GREEN(col)	& fade_mask,
+		PAL_BLUE(col)	& fade_mask
 	);
 }
 
@@ -46,7 +44,7 @@ void fade_step_color(uint8_t fade_step)
 void fade_in(uint8_t fade_delay)
 {
 	uint8_t fade_step, current_delay;
-	for(fade_step = 0; fade_step != (FADE_STEP_COUNT + 1); fade_step++)
+	for(fade_step = 0; fade_step != FADE_STEP_COUNT; fade_step++)
 	{
 		fade_step_color(fade_step);
 		current_delay = fade_delay;
@@ -62,7 +60,7 @@ void fade_in(uint8_t fade_delay)
 void fade_out(uint8_t fade_delay)
 {
 	uint8_t fade_step, current_delay;
-	for(fade_step = FADE_STEP_COUNT; fade_step != 0xFF; --fade_step)
+	for(fade_step = FADE_STEP_END; fade_step != 0xFF; --fade_step)
 	{
 		fade_step_color(fade_step);
 		current_delay = fade_delay;
@@ -72,4 +70,11 @@ void fade_out(uint8_t fade_delay)
 			current_delay--;
 		}
 	}
+}
+
+void fade_set(uint8_t fade_step)
+{
+	if(fade_step > FADE_STEP_END)
+		fade_step = FADE_STEP_END;
+	fade_step_color(fade_step);
 }

@@ -1,0 +1,24 @@
+{
+    "files.associations": {
+        "*.asm": "gbz80",
+        "*.inc": "gbz80",
+        "*.s": "asm",
+        "*.c": "c",
+        "crash_handler.h": "c",
+        "input.h": "c",
+        "hugedriver.h": "c",
+        "screens.h": "c",
+        "music.h": "c",
+        "platform.h": "c",
+        "gb.h": "c",
+        "types.h": "c",
+        "hardware.h": "c",
+        "version.h": "c",
+        "math.h": "c",
+        "palette.h": "c",
+        "title.h": "c",
+        "sgb.h": "c",
+        "cgb.h": "c",
+        "stdint.h": "c"
+    }
+}
