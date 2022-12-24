@@ -1,9 +1,9 @@
 #pragma bank 1
 #include "fade.h"
 
-#include "palette.h"
 #include "math.h"
 
+uint8_t fade_enable_bg = 0xFF, fade_enable_obj = 0xFF;
 palette_color_t fade_bg_pal[GBC_PAL_COUNT * GBC_PAL_COLOR_COUNT];
 palette_color_t fade_obj_pal[GBC_PAL_COUNT * GBC_PAL_COLOR_COUNT];
 
@@ -36,8 +36,10 @@ void fade_step_color(uint8_t fade_step)
 			pal[c] = update_color(fade_step, *col);
 			pal_s[c] = update_color(fade_step, *col_s);
 		}
-		set_bkg_palette(pal_idx, 1, pal);
-		set_sprite_palette(pal_idx, 1, pal_s);
+		if(GET_BIT(fade_enable_bg, pal_idx))
+			set_bkg_palette(pal_idx, 1, pal);
+		if(GET_BIT(fade_enable_obj, pal_idx))
+			set_sprite_palette(pal_idx, 1, pal_s);
 	}
 }
 
@@ -77,4 +79,40 @@ void fade_set(uint8_t fade_step)
 	if(fade_step > FADE_STEP_END)
 		fade_step = FADE_STEP_END;
 	fade_step_color(fade_step);
+}
+
+void fade_enable_pal(pal_type_e pal_type, uint8_t pal_idx, uint8_t enable_fade)
+{
+	if(pal_type == PAL_TYPE_BG)
+		if(enable_fade)
+			SET_BIT(fade_enable_bg, pal_idx);
+		else
+			UNSET_BIT(fade_enable_bg, pal_idx);
+	else
+		if(enable_fade)
+			SET_BIT(fade_enable_obj, pal_idx);
+		else
+			UNSET_BIT(fade_enable_obj, pal_idx);
+}
+
+void fade_enable_pals(pal_type_e pal_type, uint8_t enable_fade)
+{
+	if(pal_type == PAL_TYPE_BG)
+		if(enable_fade)
+			fade_enable_bg = 0xFF;
+		else
+			fade_enable_bg = 0x00;
+	else
+		if(enable_fade)
+			fade_enable_obj = 0xFF;
+		else
+			fade_enable_obj = 0x00;
+}
+
+void fade_enable_all(uint8_t enable_fade)
+{
+	if(enable_fade)
+		fade_enable_bg = fade_enable_obj = 0xFF;
+	else
+		fade_enable_bg = fade_enable_obj = 0x00;
 }

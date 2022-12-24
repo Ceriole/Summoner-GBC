@@ -5,7 +5,7 @@
 #include <gb/gb.h>
 #include <stdint.h>
 
-#include "hUGEDriver.h"
+#include <hUGEDriver.h>
 
 extern hUGESong_t *current_track, *last_track;
 extern uint8_t music_paused;

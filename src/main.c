@@ -22,8 +22,11 @@ void LCD_isr() NONBANKED
 	}
 }
 
+uint16_t global_timer;
+
 void VBL_global() NONBANKED
 {
+	global_timer++;
 	input_update();
 }
 

@@ -19,6 +19,19 @@
         "title.h": "c",
         "sgb.h": "c",
         "cgb.h": "c",
-        "stdint.h": "c"
-    }
+        "stdint.h": "c",
+        "object.h": "c",
+        "metasprites.h": "c",
+        "sprite.h": "c",
+        "bluefire.h": "c",
+        "bluefire_anim.h": "c"
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "e:\\GameBoy\\Summoner",
+            "binaryPath": "e:\\GameBoy\\Summoner\\SUMMONER.gbc",
+            "binaryArgs": []
+        }
+    ]
 }
