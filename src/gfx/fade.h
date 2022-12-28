@@ -8,6 +8,8 @@
 #define FADE_STEP_COUNT 6
 #define FADE_STEP_END (FADE_STEP_COUNT - 1)
 
+extern uint8_t fade_step;
+
 void fade_in(uint8_t fade_delay);
 void fade_out(uint8_t fade_delay);
 void fade_set(uint8_t fade_step);

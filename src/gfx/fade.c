@@ -3,6 +3,7 @@
 
 #include "math.h"
 
+uint8_t fade_step = 0;
 uint8_t fade_enable_bg = 0xFF, fade_enable_obj = 0xFF;
 palette_color_t fade_bg_pal[GBC_PAL_COUNT * GBC_PAL_COLOR_COUNT];
 palette_color_t fade_obj_pal[GBC_PAL_COUNT * GBC_PAL_COLOR_COUNT];
@@ -45,7 +46,7 @@ void fade_step_color(uint8_t fade_step)
 
 void fade_in(uint8_t fade_delay)
 {
-	uint8_t fade_step, current_delay;
+	uint8_t current_delay;
 	for(fade_step = 0; fade_step != FADE_STEP_COUNT; fade_step++)
 	{
 		fade_step_color(fade_step);
@@ -61,7 +62,7 @@ void fade_in(uint8_t fade_delay)
 
 void fade_out(uint8_t fade_delay)
 {
-	uint8_t fade_step, current_delay;
+	uint8_t current_delay;
 	for(fade_step = FADE_STEP_END; fade_step != 0xFF; --fade_step)
 	{
 		fade_step_color(fade_step);

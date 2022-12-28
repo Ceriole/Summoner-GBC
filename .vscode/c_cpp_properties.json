@@ -20,7 +20,7 @@
             "forcedInclude": [
                 "${workspaceFolder}/src/lint.h"
             ],
-            "intelliSenseMode": "${default}"
+            "intelliSenseMode": "gcc-x86"
         }
     ],
     "version": 4

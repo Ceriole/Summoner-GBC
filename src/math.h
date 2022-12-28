@@ -17,4 +17,7 @@ uint16_t shift_right(uint16_t a, uint16_t b);
 #define UNSET_BIT_MASK(N, MASK) N &= ~MASK
 #define GET_BIT_MASK(N, MASK) (N & MASK)
 
+#define MIN(A, B) ((A) < (B) ? (A) : (B))
+#define MAX(A, B) ((A) > (B) ? (A) : (B))
+
 #endif // __MATH_H__

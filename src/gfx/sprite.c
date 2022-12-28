@@ -31,11 +31,10 @@ void spr_update(sprite_t* spr)
 	spr->timer++;
 }
 
-volatile extern uint16_t global_timer;
 uint8_t spr_render(sprite_t* spr, uint8_t oam_idx) NONBANKED
 {
 	const metasprite_t* current_sprite = spr->metasprites[spr->ms_idx];
-	if(spr->hide || (spr->flash && ((global_timer / 2) % 2)))
+	if(spr->hide || (spr->flash && ((sys_time / 2) % 2)))
 		return 0;
 
 	if(spr->flip_h && spr->flip_v)
