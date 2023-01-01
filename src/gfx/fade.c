@@ -120,8 +120,8 @@ void fade_set(uint8_t step) CRITICAL
 	if(step > FADE_STEP_END)
 		step = FADE_STEP_END;
 	fade_step = step;
-	fade_step_color();
 	fade_status = FADE_NONE;
+	fade_step_color();
 }
 
 void fade_enable_pal(pal_type_e pal_type, uint8_t pal_idx, uint8_t enable_fade)

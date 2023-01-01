@@ -67,6 +67,7 @@ void screen_studio(void) BANKED
 
 	fade_out(CERISOFT_FADE_DELAY);
 	while(fade_running()) wait_vbl_done();
+	MUSIC_STOP;
 
 	delay(CERISOFT_PREFADE_DELAY);
 }

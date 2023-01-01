@@ -17,6 +17,7 @@
 #include "sys/input.h"
 
 DECLARE_MUSIC(mus_title);
+DECLARE_MUSIC(mus_titleout);
 
 #define PENTA_Y_POS 5
 #define PENTA_HEIGHT 111
@@ -189,5 +190,7 @@ void title_loop(void) BANKED
 	fade_enable_all(TRUE);
 	fade_out(TITLE_FADE_DELAY);
 	MUSIC_STOP;
+	MUSIC_PLAY(&mus_titleout, BANK(mus_titleout));
 	while(fade_running()) wait_vbl_done();
+	MUSIC_STOP;
 }
