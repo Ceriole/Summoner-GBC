@@ -6,6 +6,7 @@
 #include "screens.h"
 #include "sys/input.h"
 #include "sys/music.h"
+#include "gfx/fade.h"
 
 void main(void)
 {
@@ -21,6 +22,7 @@ void main(void)
 		add_low_priority_TIM(music_callback);
 
 		add_VBL(input_update);
+		add_VBL(fade_vbl_isr);
 	}
 	MUSIC_INIT;
 	LCDC_REG |= LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON;
