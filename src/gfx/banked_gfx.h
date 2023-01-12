@@ -1,7 +1,7 @@
 #ifndef __BANKED_GFX_H__
 #define __BANKED_GFX_H__
 
-#include "sys/banked_func.h"
+#include "sys/banks.h"
 
 BANKED_DATA_FUNC_EXTERN(set_banked_bkg_data, uint8_t first_tile, uint8_t nb_tiles, const uint8_t* data);
 BANKED_DATA_FUNC_EXTERN(set_banked_sprite_data, uint8_t first_tile, uint8_t nb_tiles, const uint8_t* data);

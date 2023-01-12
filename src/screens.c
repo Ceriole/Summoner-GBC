@@ -15,8 +15,8 @@
 #include "sys/music.h"
 #include "sys/input.h"
 
-#include "sys/palette.h"
-#include "sys/fade.h"
+#include "gfx/palette.h"
+#include "gfx/fade.h"
 
 DECLARE_MUSIC(mus_cerisoft);
 
@@ -53,9 +53,10 @@ void screen_studio(void) BANKED
 	
 	delay(CERISOFT_PREFADE_DELAY);
 
-	fade_in(CERISOFT_FADE_DELAY);
+	MUSIC_PLAY(&mus_cerisoft, BANK(mus_cerisoft));
 
-	music_play(&mus_cerisoft, BANK(mus_cerisoft));
+	fade_in(CERISOFT_FADE_DELAY);
+	while(fade_running()) wait_vbl_done();
 
 	for(uint8_t i = 0; i < CERISOFT_EXIT_DELAY; i++)
 	{
@@ -65,6 +66,8 @@ void screen_studio(void) BANKED
 	}
 
 	fade_out(CERISOFT_FADE_DELAY);
+	while(fade_running()) wait_vbl_done();
+	MUSIC_STOP;
 
 	delay(CERISOFT_PREFADE_DELAY);
 }

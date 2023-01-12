@@ -4,6 +4,7 @@
 #include <gbdk/platform.h>
 #include <gb/gb.h>
 #include "hUGEDriver.h"
+#include "banks.h"
 
 uint8_t music_paused = TRUE;
 const hUGESong_t *current_track, *last_track = 0;
@@ -14,10 +15,9 @@ void music_callback() NONBANKED
 	if (music_paused) 
 			return;
 
-	uint8_t __save = _current_bank;
-	SWITCH_ROM(current_track_bank);
+	PUSH_BANK(current_track_bank);
 	hUGE_dosound();
-	SWITCH_ROM(__save);
+	POP_BANK;
 }
 
 void music_play(const hUGESong_t* track, uint8_t bank) NONBANKED

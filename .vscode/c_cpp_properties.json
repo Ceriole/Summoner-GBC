@@ -1,21 +1,26 @@
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "GBDK",
             "includePath": [
                 "${workspaceFolder}/src",
-                "${workspaceFolder}/build/res",
+                "${workspaceFolder}/build",
                 "${workspaceFolder}/lib/hUGEDriver/include",
                 "${env:GBDK_HOME}/include"
             ],
             "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
+                "__PORT_sm83",
+                "__SDCC",
+                "GBDK"
             ],
             "compilerPath": "${env:GBDK_HOME}/bin/lcc.exe",
+            "compilerArgs": ["-msm83:gb"],
             "cStandard": "c11",
-            "cppStandard": "c++11"
+            "cppStandard": "c++11",
+            "forcedInclude": [
+                "${workspaceFolder}/src/lint.h"
+            ],
+            "intelliSenseMode": "gcc-x86"
         }
     ],
     "version": 4

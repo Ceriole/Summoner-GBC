@@ -180,6 +180,7 @@ $(PROJECT_NAME).$(EXT): $(OBJ)
 # RESOURCES ###############################################
 # Export asesprite files only if Aseprite is set.
 ifdef ASEPRITE_HOME
+.SECONDARY: $(addprefix $(OBJDIR)/, $(ASEFILES:.ase=.png) $(ASEFILES:.ase=.json), $(ASEFILES:.ase=.c), $(ASEFILES:.ase=.h), $(ASEFILES:.ase=_anim.c), $(ASEFILES:.ase=_anim.h))
 $(OBJDIR)/$(RESDIR)/%.png: $(RESDIR)/%.ase
 	@echo 'Exporting $< to $@'
 	@mkdir -p $(dir $@)

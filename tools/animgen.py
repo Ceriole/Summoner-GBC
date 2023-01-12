@@ -100,13 +100,17 @@ def gen_header(data: dict) -> str:
     output += '*/\n\n'
     return output
 
+def gen_includes() -> str:
+    output = '#include <gbdk/platform.h>\n'
+    output += '#include "gfx/sprite.h"\n\n'
+    return output
+
 def gen_c_source(data: dict) -> str:
     output = gen_header(data)
     descriptor = data['meta']['descriptor'];
 
     output += '#include "%s"\n\n'%(data['meta']['filename'].replace('.c', '.h'))
-    output += '#include <gbdk/platform.h>\n'
-    output += '#include "gfx/object.h"\n\n'
+    output += gen_includes()
 
     output += '#pragma bank %d\n\n'%(int(data['meta']['bank']))
     output += 'BANKREF(%s)\n\n'%(descriptor)
@@ -135,8 +139,7 @@ def gen_h_source(data: dict) -> str:
     output += '#ifndef %s\n'%(headerfiledef)
     output += '#define %s\n\n'%(headerfiledef)
 
-    output += '#include <gbdk/platform.h>\n'
-    output += '#include "gfx/object.h"\n\n'
+    output += gen_includes()
 
     descriptor = data['meta']['descriptor'];
     output += 'BANKREF_EXTERN(%s)\n\n'%(descriptor)
